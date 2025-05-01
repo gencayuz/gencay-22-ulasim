@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
@@ -31,15 +30,21 @@ export interface LicenseData {
     startDate: Date;
     endDate: Date;
   };
+  srcCertificate: {
+    startDate: Date;
+    endDate: Date;
+  };
+  licenseDocument: string | null;
 }
 
 interface DataTableProps {
   data: LicenseData[];
   plateType: string;
   onSave: (data: LicenseData) => void;
+  renderActionButtons?: (record: LicenseData) => React.ReactNode;
 }
 
-export function DataTable({ data, plateType, onSave }: DataTableProps) {
+export function DataTable({ data, plateType, onSave, renderActionButtons }: DataTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   
   // Dialog state for adding/editing entries
@@ -128,7 +133,12 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
       psychotechnic: {
         startDate: psychoStartDate,
         endDate: psychoEndDate
-      }
+      },
+      srcCertificate: {
+        startDate: startDate,
+        endDate: endDate
+      },
+      licenseDocument: null,
     };
     
     onSave(newItem);
@@ -147,6 +157,7 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
     return "normal"; // Valid
   };
 
+  
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
@@ -174,6 +185,7 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
               <TableHead>Sağlık Raporu</TableHead>
               <TableHead>Koltuk Sigortası</TableHead>
               <TableHead>Psikoteknik</TableHead>
+              <TableHead>SRC Belgesi</TableHead>
               <TableHead>Durum</TableHead>
               <TableHead className="text-right">İşlemler</TableHead>
             </TableRow>
@@ -185,11 +197,12 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
                 const healthStatus = item.healthReport ? getRowStatus(item.healthReport.endDate) : "normal";
                 const seatStatus = item.seatInsurance ? getRowStatus(item.seatInsurance.endDate) : "normal";
                 const psychoStatus = item.psychotechnic ? getRowStatus(item.psychotechnic.endDate) : "normal";
+                const srcStatus = item.srcCertificate ? getRowStatus(item.srcCertificate.endDate) : "normal";
                 
                 // Get the most severe status among all documents
-                const worstStatus = [licenseStatus, healthStatus, seatStatus, psychoStatus].includes("danger") 
+                const worstStatus = [licenseStatus, healthStatus, seatStatus, psychoStatus, srcStatus].includes("danger") 
                   ? "danger" 
-                  : [licenseStatus, healthStatus, seatStatus, psychoStatus].includes("warning") 
+                  : [licenseStatus, healthStatus, seatStatus, psychoStatus, srcStatus].includes("warning") 
                     ? "warning" 
                     : "normal";
                 
@@ -213,6 +226,11 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
                         <span className={licenseStatus === "danger" ? "text-danger" : licenseStatus === "warning" ? "text-amber-500" : ""}>
                           {format(item.endDate, "dd.MM.yyyy")}
                         </span>
+                        {item.licenseDocument && (
+                          <span className="text-xs text-blue-500 mt-1">
+                            Belge: {item.licenseDocument}
+                          </span>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell>
@@ -246,6 +264,16 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
                       </div>
                     </TableCell>
                     <TableCell>
+                      <div className="flex flex-col">
+                        <span className="text-xs text-gray-500">Başlangıç:</span>
+                        <span>{item.srcCertificate ? format(item.srcCertificate.startDate, "dd.MM.yyyy") : "-"}</span>
+                        <span className="text-xs text-gray-500 mt-1">Bitiş:</span>
+                        <span className={srcStatus === "danger" ? "text-danger" : srcStatus === "warning" ? "text-amber-500" : ""}>
+                          {item.srcCertificate ? format(item.srcCertificate.endDate, "dd.MM.yyyy") : "-"}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
                       {worstStatus === "danger" && (
                         <span className="flex items-center text-danger">
                           <AlertCircle className="h-4 w-4 mr-1" />
@@ -263,16 +291,20 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
                       )}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="outline" size="sm" onClick={() => handleEdit(item)}>
-                        Düzenle
-                      </Button>
+                      {renderActionButtons ? (
+                        renderActionButtons(item)
+                      ) : (
+                        <Button variant="outline" size="sm" onClick={() => handleEdit(item)}>
+                          Düzenle
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 );
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={10} className="h-24 text-center">
+                <TableCell colSpan={11} className="h-24 text-center">
                   Kayıt bulunamadı.
                 </TableCell>
               </TableRow>
@@ -286,6 +318,7 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
           <DialogHeader>
             <DialogTitle>{currentItem ? 'Kaydı Düzenle' : 'Yeni Kayıt Ekle'}</DialogTitle>
           </DialogHeader>
+          
           <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto">
             <div className="grid grid-cols-4 items-center gap-4">
               <label htmlFor="name" className="text-right">
@@ -561,6 +594,65 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
                         mode="single"
                         selected={psychoEndDate}
                         onSelect={setPsychoEndDate}
+                        locale={tr}
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+            </div>
+            
+            {/* SRC Belgesi */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label className="text-right font-medium">
+                SRC Belgesi
+              </label>
+              <div className="col-span-3 grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-muted-foreground">
+                    Başlangıç
+                  </label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal mt-1"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {startDate ? format(startDate, "dd.MM.yyyy") : "Tarih seçin"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={startDate}
+                        onSelect={setStartDate}
+                        locale={tr}
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div>
+                  <label className="text-sm text-muted-foreground">
+                    Bitiş
+                  </label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal mt-1"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {endDate ? format(endDate, "dd.MM.yyyy") : "Tarih seçin"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={endDate}
+                        onSelect={setEndDate}
                         locale={tr}
                         className={cn("p-3 pointer-events-auto")}
                       />
