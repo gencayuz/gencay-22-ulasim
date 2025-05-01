@@ -18,6 +18,19 @@ export interface LicenseData {
   vehicleAge: number;
   startDate: Date;
   endDate: Date;
+  // New fields
+  healthReport: {
+    startDate: Date;
+    endDate: Date;
+  };
+  seatInsurance: {
+    startDate: Date;
+    endDate: Date;
+  };
+  psychotechnic: {
+    startDate: Date;
+    endDate: Date;
+  };
 }
 
 interface DataTableProps {
@@ -37,6 +50,14 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
   const [vehicleAge, setVehicleAge] = useState<number>(0);
   const [startDate, setStartDate] = useState<Date | undefined>(new Date());
   const [endDate, setEndDate] = useState<Date | undefined>(addDays(new Date(), 365));
+  
+  // New state for additional fields
+  const [healthStartDate, setHealthStartDate] = useState<Date | undefined>(new Date());
+  const [healthEndDate, setHealthEndDate] = useState<Date | undefined>(addDays(new Date(), 365));
+  const [seatStartDate, setSeatStartDate] = useState<Date | undefined>(new Date());
+  const [seatEndDate, setSeatEndDate] = useState<Date | undefined>(addDays(new Date(), 365));
+  const [psychoStartDate, setPsychoStartDate] = useState<Date | undefined>(new Date());
+  const [psychoEndDate, setPsychoEndDate] = useState<Date | undefined>(addDays(new Date(), 365));
 
   const filteredData = data.filter(
     (item) =>
@@ -51,6 +72,13 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
     setVehicleAge(0);
     setStartDate(new Date());
     setEndDate(addDays(new Date(), 365));
+    // Reset additional fields
+    setHealthStartDate(new Date());
+    setHealthEndDate(addDays(new Date(), 365));
+    setSeatStartDate(new Date());
+    setSeatEndDate(addDays(new Date(), 365));
+    setPsychoStartDate(new Date());
+    setPsychoEndDate(addDays(new Date(), 365));
     setIsDialogOpen(true);
   };
 
@@ -61,11 +89,21 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
     setVehicleAge(item.vehicleAge);
     setStartDate(item.startDate);
     setEndDate(item.endDate);
+    
+    // Set additional fields if they exist, otherwise use defaults
+    setHealthStartDate(item.healthReport?.startDate || new Date());
+    setHealthEndDate(item.healthReport?.endDate || addDays(new Date(), 365));
+    setSeatStartDate(item.seatInsurance?.startDate || new Date());
+    setSeatEndDate(item.seatInsurance?.endDate || addDays(new Date(), 365));
+    setPsychoStartDate(item.psychotechnic?.startDate || new Date());
+    setPsychoEndDate(item.psychotechnic?.endDate || addDays(new Date(), 365));
+    
     setIsDialogOpen(true);
   };
 
   const handleSave = () => {
-    if (!startDate || !endDate) return;
+    if (!startDate || !endDate || !healthStartDate || !healthEndDate || 
+        !seatStartDate || !seatEndDate || !psychoStartDate || !psychoEndDate) return;
     
     const newItem: LicenseData = {
       id: currentItem?.id || crypto.randomUUID(),
@@ -74,6 +112,18 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
       vehicleAge,
       startDate,
       endDate,
+      healthReport: {
+        startDate: healthStartDate,
+        endDate: healthEndDate
+      },
+      seatInsurance: {
+        startDate: seatStartDate,
+        endDate: seatEndDate
+      },
+      psychotechnic: {
+        startDate: psychoStartDate,
+        endDate: psychoEndDate
+      }
     };
     
     onSave(newItem);
@@ -107,15 +157,21 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
         <Button onClick={handleAddNew}>Yeni Kayıt Ekle</Button>
       </div>
       
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Adı Soyadı</TableHead>
               <TableHead>Araç Plakası</TableHead>
               <TableHead>Araç Yaşı</TableHead>
-              <TableHead>Başlangıç Tarihi</TableHead>
-              <TableHead>Bitiş Tarihi</TableHead>
+              <TableHead>Ruhsat Başlangıç</TableHead>
+              <TableHead>Ruhsat Bitiş</TableHead>
+              <TableHead>Sağlık Raporu Başlangıç</TableHead>
+              <TableHead>Sağlık Raporu Bitiş</TableHead>
+              <TableHead>Koltuk Sigortası Başlangıç</TableHead>
+              <TableHead>Koltuk Sigortası Bitiş</TableHead>
+              <TableHead>Psikoteknik Başlangıç</TableHead>
+              <TableHead>Psikoteknik Bitiş</TableHead>
               <TableHead>Durum</TableHead>
               <TableHead className="text-right">İşlemler</TableHead>
             </TableRow>
@@ -123,34 +179,67 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
           <TableBody>
             {filteredData.length > 0 ? (
               filteredData.map((item) => {
-                const status = getRowStatus(item.endDate);
+                const licenseStatus = getRowStatus(item.endDate);
+                const healthStatus = item.healthReport ? getRowStatus(item.healthReport.endDate) : "normal";
+                const seatStatus = item.seatInsurance ? getRowStatus(item.seatInsurance.endDate) : "normal";
+                const psychoStatus = item.psychotechnic ? getRowStatus(item.psychotechnic.endDate) : "normal";
+                
+                // Get the most severe status among all documents
+                const worstStatus = [licenseStatus, healthStatus, seatStatus, psychoStatus].includes("danger") 
+                  ? "danger" 
+                  : [licenseStatus, healthStatus, seatStatus, psychoStatus].includes("warning") 
+                    ? "warning" 
+                    : "normal";
+                
                 return (
                   <TableRow 
                     key={item.id} 
                     className={
-                      status === "danger" ? "bg-danger/10" : 
-                      status === "warning" ? "bg-warning/30" : ""
+                      worstStatus === "danger" ? "bg-danger/10" : 
+                      worstStatus === "warning" ? "bg-warning/30" : ""
                     }
                   >
                     <TableCell>{item.name}</TableCell>
                     <TableCell>{item.licensePlate}</TableCell>
                     <TableCell>{item.vehicleAge}</TableCell>
                     <TableCell>{format(item.startDate, "dd.MM.yyyy")}</TableCell>
-                    <TableCell>{format(item.endDate, "dd.MM.yyyy")}</TableCell>
                     <TableCell>
-                      {status === "danger" && (
+                      <span className={licenseStatus === "danger" ? "text-danger" : licenseStatus === "warning" ? "text-amber-500" : ""}>
+                        {format(item.endDate, "dd.MM.yyyy")}
+                      </span>
+                    </TableCell>
+                    <TableCell>{item.healthReport ? format(item.healthReport.startDate, "dd.MM.yyyy") : "-"}</TableCell>
+                    <TableCell>
+                      <span className={healthStatus === "danger" ? "text-danger" : healthStatus === "warning" ? "text-amber-500" : ""}>
+                        {item.healthReport ? format(item.healthReport.endDate, "dd.MM.yyyy") : "-"}
+                      </span>
+                    </TableCell>
+                    <TableCell>{item.seatInsurance ? format(item.seatInsurance.startDate, "dd.MM.yyyy") : "-"}</TableCell>
+                    <TableCell>
+                      <span className={seatStatus === "danger" ? "text-danger" : seatStatus === "warning" ? "text-amber-500" : ""}>
+                        {item.seatInsurance ? format(item.seatInsurance.endDate, "dd.MM.yyyy") : "-"}
+                      </span>
+                    </TableCell>
+                    <TableCell>{item.psychotechnic ? format(item.psychotechnic.startDate, "dd.MM.yyyy") : "-"}</TableCell>
+                    <TableCell>
+                      <span className={psychoStatus === "danger" ? "text-danger" : psychoStatus === "warning" ? "text-amber-500" : ""}>
+                        {item.psychotechnic ? format(item.psychotechnic.endDate, "dd.MM.yyyy") : "-"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      {worstStatus === "danger" && (
                         <span className="flex items-center text-danger">
                           <AlertCircle className="h-4 w-4 mr-1" />
                           Süresi dolmuş
                         </span>
                       )}
-                      {status === "warning" && (
+                      {worstStatus === "warning" && (
                         <span className="flex items-center text-amber-500">
                           <Bell className="h-4 w-4 mr-1" />
-                          Son {differenceInDays(item.endDate, new Date())} gün
+                          Son 7 gün
                         </span>
                       )}
-                      {status === "normal" && (
+                      {worstStatus === "normal" && (
                         <span className="text-green-600">Geçerli</span>
                       )}
                     </TableCell>
@@ -164,7 +253,7 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={7} className="h-24 text-center">
+                <TableCell colSpan={13} className="h-24 text-center">
                   Kayıt bulunamadı.
                 </TableCell>
               </TableRow>
@@ -174,11 +263,11 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>{currentItem ? 'Kaydı Düzenle' : 'Yeni Kayıt Ekle'}</DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
+          <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto">
             <div className="grid grid-cols-4 items-center gap-4">
               <label htmlFor="name" className="text-right">
                 Adı Soyadı
@@ -213,58 +302,240 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
                 className="col-span-3"
               />
             </div>
+            
+            {/* Ruhsat tarihleri */}
             <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="startDate" className="text-right">
-                Başlangıç
+              <label className="text-right font-medium">
+                Ruhsat Tarihleri
               </label>
-              <div className="col-span-3">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-left font-normal"
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {startDate ? format(startDate, "dd.MM.yyyy") : "Tarih seçin"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={startDate}
-                      onSelect={setStartDate}
-                      locale={tr}
-                      className={cn("p-3 pointer-events-auto")}
-                    />
-                  </PopoverContent>
-                </Popover>
+              <div className="col-span-3 grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="startDate" className="text-sm text-muted-foreground">
+                    Başlangıç
+                  </label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal mt-1"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {startDate ? format(startDate, "dd.MM.yyyy") : "Tarih seçin"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={startDate}
+                        onSelect={setStartDate}
+                        locale={tr}
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div>
+                  <label htmlFor="endDate" className="text-sm text-muted-foreground">
+                    Bitiş
+                  </label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal mt-1"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {endDate ? format(endDate, "dd.MM.yyyy") : "Tarih seçin"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={endDate}
+                        onSelect={setEndDate}
+                        locale={tr}
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </div>
             </div>
+            
+            {/* Sağlık Raporu */}
             <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="endDate" className="text-right">
-                Bitiş
+              <label className="text-right font-medium">
+                Sağlık Raporu
               </label>
-              <div className="col-span-3">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-left font-normal"
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {endDate ? format(endDate, "dd.MM.yyyy") : "Tarih seçin"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={endDate}
-                      onSelect={setEndDate}
-                      locale={tr}
-                      className={cn("p-3 pointer-events-auto")}
-                    />
-                  </PopoverContent>
-                </Popover>
+              <div className="col-span-3 grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-muted-foreground">
+                    Başlangıç
+                  </label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal mt-1"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {healthStartDate ? format(healthStartDate, "dd.MM.yyyy") : "Tarih seçin"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={healthStartDate}
+                        onSelect={setHealthStartDate}
+                        locale={tr}
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div>
+                  <label className="text-sm text-muted-foreground">
+                    Bitiş
+                  </label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal mt-1"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {healthEndDate ? format(healthEndDate, "dd.MM.yyyy") : "Tarih seçin"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={healthEndDate}
+                        onSelect={setHealthEndDate}
+                        locale={tr}
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+            </div>
+            
+            {/* Koltuk Sigortası */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label className="text-right font-medium">
+                Koltuk Sigortası
+              </label>
+              <div className="col-span-3 grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-muted-foreground">
+                    Başlangıç
+                  </label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal mt-1"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {seatStartDate ? format(seatStartDate, "dd.MM.yyyy") : "Tarih seçin"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={seatStartDate}
+                        onSelect={setSeatStartDate}
+                        locale={tr}
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div>
+                  <label className="text-sm text-muted-foreground">
+                    Bitiş
+                  </label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal mt-1"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {seatEndDate ? format(seatEndDate, "dd.MM.yyyy") : "Tarih seçin"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={seatEndDate}
+                        onSelect={setSeatEndDate}
+                        locale={tr}
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+            </div>
+            
+            {/* Psikoteknik Belgesi */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label className="text-right font-medium">
+                Psikoteknik Belgesi
+              </label>
+              <div className="col-span-3 grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-muted-foreground">
+                    Başlangıç
+                  </label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal mt-1"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {psychoStartDate ? format(psychoStartDate, "dd.MM.yyyy") : "Tarih seçin"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={psychoStartDate}
+                        onSelect={setPsychoStartDate}
+                        locale={tr}
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div>
+                  <label className="text-sm text-muted-foreground">
+                    Bitiş
+                  </label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal mt-1"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {psychoEndDate ? format(psychoEndDate, "dd.MM.yyyy") : "Tarih seçin"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={psychoEndDate}
+                        onSelect={setPsychoEndDate}
+                        locale={tr}
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </div>
             </div>
           </div>

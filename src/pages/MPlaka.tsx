@@ -16,6 +16,27 @@ const MPlaka = () => {
           ...item,
           startDate: new Date(item.startDate),
           endDate: new Date(item.endDate),
+          healthReport: item.healthReport ? {
+            startDate: new Date(item.healthReport.startDate),
+            endDate: new Date(item.healthReport.endDate),
+          } : {
+            startDate: new Date(),
+            endDate: addDays(new Date(), 365),
+          },
+          seatInsurance: item.seatInsurance ? {
+            startDate: new Date(item.seatInsurance.startDate),
+            endDate: new Date(item.seatInsurance.endDate),
+          } : {
+            startDate: new Date(),
+            endDate: addDays(new Date(), 365),
+          },
+          psychotechnic: item.psychotechnic ? {
+            startDate: new Date(item.psychotechnic.startDate),
+            endDate: new Date(item.psychotechnic.endDate),
+          } : {
+            startDate: new Date(),
+            endDate: addDays(new Date(), 365),
+          },
         }));
       } catch (error) {
         console.error("Error parsing saved data", error);
@@ -70,6 +91,18 @@ function generateInitialData(): LicenseData[] {
       vehicleAge: 3,
       startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
       endDate: addDays(today, 15),
+      healthReport: {
+        startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
+        endDate: addDays(today, 30),
+      },
+      seatInsurance: {
+        startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
+        endDate: addDays(today, 5),
+      },
+      psychotechnic: {
+        startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
+        endDate: addDays(today, -3), // Expired
+      },
     },
     {
       id: "2",
@@ -78,6 +111,18 @@ function generateInitialData(): LicenseData[] {
       vehicleAge: 5,
       startDate: new Date(today.getFullYear() - 2, today.getMonth(), today.getDate()),
       endDate: addDays(today, 3),
+      healthReport: {
+        startDate: new Date(today.getFullYear() - 2, today.getMonth(), today.getDate()),
+        endDate: addDays(today, 60),
+      },
+      seatInsurance: {
+        startDate: new Date(today.getFullYear() - 2, today.getMonth(), today.getDate()),
+        endDate: addDays(today, 45),
+      },
+      psychotechnic: {
+        startDate: new Date(today.getFullYear() - 2, today.getMonth(), today.getDate()),
+        endDate: addDays(today, 10),
+      },
     },
     {
       id: "3",
@@ -86,6 +131,18 @@ function generateInitialData(): LicenseData[] {
       vehicleAge: 2,
       startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
       endDate: addDays(today, -5), // Expired
+      healthReport: {
+        startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
+        endDate: addDays(today, 7), // About to expire
+      },
+      seatInsurance: {
+        startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
+        endDate: addDays(today, 180),
+      },
+      psychotechnic: {
+        startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
+        endDate: addDays(today, 90),
+      },
     },
   ];
 }
