@@ -87,6 +87,7 @@ function generateInitialData(): LicenseData[] {
     {
       id: "1",
       name: "Ahmet Yılmaz",
+      phone: "0555 123 4567",
       licensePlate: "34 M 1234",
       vehicleAge: 3,
       startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
@@ -107,6 +108,7 @@ function generateInitialData(): LicenseData[] {
     {
       id: "2",
       name: "Mehmet Demir",
+      phone: "0532 987 6543",
       licensePlate: "34 M 5678",
       vehicleAge: 5,
       startDate: new Date(today.getFullYear() - 2, today.getMonth(), today.getDate()),
@@ -127,6 +129,7 @@ function generateInitialData(): LicenseData[] {
     {
       id: "3",
       name: "Ayşe Kaya",
+      phone: "0533 456 7890",
       licensePlate: "34 M 9012",
       vehicleAge: 2,
       startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
