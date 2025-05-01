@@ -24,7 +24,7 @@ const sidebarItems = [
     icon: ClipboardList,
   },
   {
-    title: "J Plaka",
+    title: "T Plaka",
     path: "/j-plaka",
     icon: FileCheck,
   },

@@ -1,11 +1,15 @@
 
 import { useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
-import { DataTable, LicenseData } from "@/components/DataTable";
+import { LicenseData } from "@/components/DataTable";
+import { EnhancedDataTable } from "@/components/EnhancedDataTable";
 import { toast } from "sonner";
 import { addDays } from "date-fns";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useNavigate } from "react-router-dom";
 
 const MPlaka = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState<LicenseData[]>(() => {
     const savedData = localStorage.getItem("mPlaka");
     if (savedData) {
@@ -37,6 +41,14 @@ const MPlaka = () => {
             startDate: new Date(),
             endDate: addDays(new Date(), 365),
           },
+          srcCertificate: item.srcCertificate ? {
+            startDate: new Date(item.srcCertificate.startDate),
+            endDate: new Date(item.srcCertificate.endDate),
+          } : {
+            startDate: new Date(),
+            endDate: addDays(new Date(), 365),
+          },
+          licenseDocument: item.licenseDocument || null,
         }));
       } catch (error) {
         console.error("Error parsing saved data", error);
@@ -71,9 +83,16 @@ const MPlaka = () => {
 
   return (
     <Layout>
+      <Tabs defaultValue="records" className="w-full mb-6">
+        <TabsList>
+          <TabsTrigger value="home" onClick={() => navigate("/")}>Ana Sayfa</TabsTrigger>
+          <TabsTrigger value="records">M Plaka Kayıtları</TabsTrigger>
+        </TabsList>
+      </Tabs>
+      
       <div className="container mx-auto">
         <h2 className="text-xl font-semibold mb-4">M Plaka Kayıtları</h2>
-        <DataTable data={data} plateType="M" onSave={handleSave} />
+        <EnhancedDataTable data={data} plateType="M" onSave={handleSave} />
       </div>
     </Layout>
   );
@@ -104,6 +123,11 @@ function generateInitialData(): LicenseData[] {
         startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
         endDate: addDays(today, -3), // Expired
       },
+      srcCertificate: {
+        startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
+        endDate: addDays(today, 60),
+      },
+      licenseDocument: null,
     },
     {
       id: "2",
@@ -125,6 +149,11 @@ function generateInitialData(): LicenseData[] {
         startDate: new Date(today.getFullYear() - 2, today.getMonth(), today.getDate()),
         endDate: addDays(today, 10),
       },
+      srcCertificate: {
+        startDate: new Date(today.getFullYear() - 2, today.getMonth(), today.getDate()),
+        endDate: addDays(today, 90),
+      },
+      licenseDocument: null,
     },
     {
       id: "3",
@@ -146,6 +175,11 @@ function generateInitialData(): LicenseData[] {
         startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
         endDate: addDays(today, 90),
       },
+      srcCertificate: {
+        startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
+        endDate: addDays(today, 45),
+      },
+      licenseDocument: null,
     },
   ];
 }
