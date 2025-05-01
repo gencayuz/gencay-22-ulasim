@@ -37,14 +37,6 @@ const D4Plaka = () => {
             startDate: new Date(),
             endDate: addDays(new Date(), 365),
           },
-          srcCertificate: item.srcCertificate ? {
-            startDate: new Date(item.srcCertificate.startDate),
-            endDate: new Date(item.srcCertificate.endDate),
-          } : {
-            startDate: new Date(),
-            endDate: addDays(new Date(), 365),
-          },
-          licenseDocument: item.licenseDocument || "",
           phone: item.phone || "",
         }));
       } catch (error) {
@@ -113,11 +105,6 @@ function generateInitialData(): LicenseData[] {
         startDate: new Date(today.getFullYear(), today.getMonth() - 3, today.getDate()),
         endDate: addDays(today, 150),
       },
-      srcCertificate: {
-        startDate: new Date(today.getFullYear(), today.getMonth() - 3, today.getDate()),
-        endDate: addDays(today, 150),
-      },
-      licenseDocument: "",
     },
   ];
 }

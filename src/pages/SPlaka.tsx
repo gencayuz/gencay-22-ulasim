@@ -37,14 +37,6 @@ const SPlaka = () => {
             startDate: new Date(),
             endDate: addDays(new Date(), 365),
           },
-          srcCertificate: item.srcCertificate ? {
-            startDate: new Date(item.srcCertificate.startDate),
-            endDate: new Date(item.srcCertificate.endDate),
-          } : {
-            startDate: new Date(),
-            endDate: addDays(new Date(), 365),
-          },
-          licenseDocument: item.licenseDocument || "",
           phone: item.phone || "",
         }));
       } catch (error) {
@@ -113,11 +105,6 @@ function generateInitialData(): LicenseData[] {
         startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
         endDate: addDays(today, 35),
       },
-      srcCertificate: {
-        startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
-        endDate: addDays(today, 45),
-      },
-      licenseDocument: "",
     },
     {
       id: "2",
@@ -139,11 +126,6 @@ function generateInitialData(): LicenseData[] {
         startDate: new Date(today.getFullYear() - 2, today.getMonth(), today.getDate()),
         endDate: addDays(today, 32),
       },
-      srcCertificate: {
-        startDate: new Date(today.getFullYear() - 2, today.getMonth(), today.getDate()),
-        endDate: addDays(today, 42),
-      },
-      licenseDocument: "",
     },
     {
       id: "3",
@@ -165,11 +147,6 @@ function generateInitialData(): LicenseData[] {
         startDate: new Date(today.getFullYear() - 3, today.getMonth(), today.getDate()),
         endDate: addDays(today, -15),
       },
-      srcCertificate: {
-        startDate: new Date(today.getFullYear() - 3, today.getMonth(), today.getDate()),
-        endDate: addDays(today, 55),
-      },
-      licenseDocument: "",
     },
   ];
 }
