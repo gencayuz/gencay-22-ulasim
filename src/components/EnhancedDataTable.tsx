@@ -93,7 +93,7 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
       <DataTable 
         data={data} 
         plateType={plateType} 
-        onSave={onSave}
+        onSave={onSave} 
         renderActionButtons={renderActionButtons}
       />
       

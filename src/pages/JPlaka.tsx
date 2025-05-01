@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
 import { DataTable, LicenseData } from "@/components/DataTable";
@@ -36,15 +37,7 @@ const JPlaka = () => {
             startDate: new Date(),
             endDate: addDays(new Date(), 365),
           },
-          srcCertificate: item.srcCertificate ? {
-            startDate: new Date(item.srcCertificate.startDate),
-            endDate: new Date(item.srcCertificate.endDate),
-          } : {
-            startDate: new Date(),
-            endDate: addDays(new Date(), 365),
-          },
           phone: item.phone || "",
-          licenseDocument: item.licenseDocument || null,
         }));
       } catch (error) {
         console.error("Error parsing saved data", error);
@@ -80,7 +73,7 @@ const JPlaka = () => {
   return (
     <Layout>
       <div className="container mx-auto">
-        <h2 className="text-xl font-semibold mb-4">T Plaka Kayıtları</h2>
+        <h2 className="text-xl font-semibold mb-4">J Plaka Kayıtları</h2>
         <DataTable data={data} plateType="J" onSave={handleSave} />
       </div>
     </Layout>
@@ -112,11 +105,6 @@ function generateInitialData(): LicenseData[] {
         startDate: new Date(today.getFullYear(), today.getMonth() - 6, today.getDate()),
         endDate: addDays(today, 180),
       },
-      srcCertificate: {
-        startDate: new Date(today.getFullYear(), today.getMonth() - 6, today.getDate()),
-        endDate: addDays(today, 180),
-      },
-      licenseDocument: null,
     },
     {
       id: "2",
@@ -138,11 +126,6 @@ function generateInitialData(): LicenseData[] {
         startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
         endDate: addDays(today, 90),
       },
-      srcCertificate: {
-        startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
-        endDate: addDays(today, 120),
-      },
-      licenseDocument: null,
     },
     {
       id: "3",
@@ -164,11 +147,6 @@ function generateInitialData(): LicenseData[] {
         startDate: new Date(today.getFullYear() - 2, today.getMonth(), today.getDate()),
         endDate: addDays(today, -10),
       },
-      srcCertificate: {
-        startDate: new Date(today.getFullYear() - 2, today.getMonth(), today.getDate()),
-        endDate: addDays(today, 150),
-      },
-      licenseDocument: null,
     },
   ];
 }

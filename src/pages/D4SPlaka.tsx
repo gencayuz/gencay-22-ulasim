@@ -37,15 +37,7 @@ const D4SPlaka = () => {
             startDate: new Date(),
             endDate: addDays(new Date(), 365),
           },
-          srcCertificate: item.srcCertificate ? {
-            startDate: new Date(item.srcCertificate.startDate),
-            endDate: new Date(item.srcCertificate.endDate),
-          } : {
-            startDate: new Date(),
-            endDate: addDays(new Date(), 365),
-          },
           phone: item.phone || "",
-          licenseDocument: item.licenseDocument || null,
         }));
       } catch (error) {
         console.error("Error parsing saved data", error);
@@ -113,11 +105,6 @@ function generateInitialData(): LicenseData[] {
         startDate: new Date(today.getFullYear(), today.getMonth() - 2, today.getDate()),
         endDate: addDays(today, 200),
       },
-      srcCertificate: {
-        startDate: new Date(today.getFullYear(), today.getMonth() - 2, today.getDate()),
-        endDate: addDays(today, 200),
-      },
-      licenseDocument: null,
     },
   ];
 }
