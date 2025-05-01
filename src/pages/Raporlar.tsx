@@ -89,15 +89,19 @@ const Raporlar = () => {
     return ageGroups;
   }, [allData]);
 
+  // Fixed function to safely handle undefined document types
   const getExpiringDocuments = (docType: DocumentType, days: number = 30) => {
     const today = new Date();
     
     return allData.filter((item: any) => {
+      // Check if the document type exists on this item before trying to access it
       if (!item[docType]) return false;
       
       const docEndDate = new Date(item[docType].endDate);
-      const daysLeft = differenceInDays(docEndDate, today);
+      // Double-check that endDate exists and is valid before calculating days
+      if (!docEndDate || isNaN(docEndDate.getTime())) return false;
       
+      const daysLeft = differenceInDays(docEndDate, today);
       return daysLeft >= 0 && daysLeft <= days;
     }).map((item: any) => ({
       ...item,
@@ -108,6 +112,7 @@ const Raporlar = () => {
   const expiringHealthReports = useMemo(() => getExpiringDocuments("healthReport"), [allData]);
   const expiringSeatInsurance = useMemo(() => getExpiringDocuments("seatInsurance"), [allData]);
   const expiringPsychotechnic = useMemo(() => getExpiringDocuments("psychotechnic"), [allData]);
+  // Only access srcCertificate if it's expected to exist
   const expiringSrcCertificates = useMemo(() => getExpiringDocuments("srcCertificate"), [allData]);
 
   const printReport = () => {
@@ -117,59 +122,80 @@ const Raporlar = () => {
   const COLORS = ["#ea384c", "#FEF7CD", "#65C466"];
   const PLATE_COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#a4de6c"];
 
-  const DocumentExpiryTable = ({ documents, title }: { documents: any[], title: string }) => (
-    <Card className="print-friendly">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div>
-          <CardTitle>{title}</CardTitle>
-          <CardDescription>Son 30 gün içinde süresi dolacak belgeler</CardDescription>
-        </div>
-        <Button onClick={printReport} className="print:hidden">
-          <FileText className="mr-2 h-4 w-4" />
-          Yazdır
-        </Button>
-      </CardHeader>
-      <CardContent>
-        {documents.length > 0 ? (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Adı Soyadı</TableHead>
-                <TableHead>Telefon</TableHead>
-                <TableHead>Plaka</TableHead>
-                <TableHead>Türü</TableHead>
-                <TableHead>Bitiş Tarihi</TableHead>
-                <TableHead>Kalan Gün</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {documents.map((doc: any) => (
-                <TableRow key={`${doc.id}-${title}`}>
-                  <TableCell>{doc.name}</TableCell>
-                  <TableCell className="flex items-center gap-1">
-                    <Phone className="h-3 w-3" />
-                    {doc.phone || "-"}
-                  </TableCell>
-                  <TableCell>{doc.licensePlate}</TableCell>
-                  <TableCell>{doc.type}</TableCell>
-                  <TableCell>
-                    {new Date(doc[title.toLowerCase().replace(/\s+/g, '').replace('belgeleri', '')].endDate).toLocaleDateString('tr-TR')}
-                  </TableCell>
-                  <TableCell>
-                    <span className={`${doc.daysLeft <= 7 ? "text-amber-500 font-bold" : ""}`}>
-                      {doc.daysLeft} gün
-                    </span>
-                  </TableCell>
+  const DocumentExpiryTable = ({ documents, title }: { documents: any[], title: string }) => {
+    // Generate a document type key from the title
+    const getDocumentTypeKey = (title: string): string => {
+      // Convert "Sağlık Raporu Belgeleri" to "healthReport"
+      // Convert "Koltuk Sigortası Belgeleri" to "seatInsurance"
+      // Convert "Psikoteknik Belgeleri" to "psychotechnic"
+      // Convert "SRC Belgeleri" to "srcCertificate"
+      
+      if (title.includes("Sağlık")) return "healthReport";
+      if (title.includes("Koltuk")) return "seatInsurance";
+      if (title.includes("Psikoteknik")) return "psychotechnic";
+      if (title.includes("SRC")) return "srcCertificate";
+      
+      // Default to a safe value in case the title doesn't match
+      return "healthReport";
+    };
+    
+    const docTypeKey = getDocumentTypeKey(title);
+    
+    return (
+      <Card className="print-friendly">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>{title}</CardTitle>
+            <CardDescription>Son 30 gün içinde süresi dolacak belgeler</CardDescription>
+          </div>
+          <Button onClick={printReport} className="print:hidden">
+            <FileText className="mr-2 h-4 w-4" />
+            Yazdır
+          </Button>
+        </CardHeader>
+        <CardContent>
+          {documents.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Adı Soyadı</TableHead>
+                  <TableHead>Telefon</TableHead>
+                  <TableHead>Plaka</TableHead>
+                  <TableHead>Türü</TableHead>
+                  <TableHead>Bitiş Tarihi</TableHead>
+                  <TableHead>Kalan Gün</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <p className="text-center py-8 text-muted-foreground">Yakında süresi dolacak belge bulunamadı</p>
-        )}
-      </CardContent>
-    </Card>
-  );
+              </TableHeader>
+              <TableBody>
+                {documents.map((doc: any) => (
+                  <TableRow key={`${doc.id}-${docTypeKey}`}>
+                    <TableCell>{doc.name}</TableCell>
+                    <TableCell className="flex items-center gap-1">
+                      <Phone className="h-3 w-3" />
+                      {doc.phone || "-"}
+                    </TableCell>
+                    <TableCell>{doc.licensePlate}</TableCell>
+                    <TableCell>{doc.type}</TableCell>
+                    <TableCell>
+                      {/* Safely access the document's end date */}
+                      {doc[docTypeKey] && new Date(doc[docTypeKey].endDate).toLocaleDateString('tr-TR')}
+                    </TableCell>
+                    <TableCell>
+                      <span className={`${doc.daysLeft <= 7 ? "text-amber-500 font-bold" : ""}`}>
+                        {doc.daysLeft} gün
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <p className="text-center py-8 text-muted-foreground">Yakında süresi dolacak belge bulunamadı</p>
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
     <Layout>
@@ -287,13 +313,13 @@ const Raporlar = () => {
         )}
       </div>
 
-      <style jsx global>{`
+      <style jsx="true" global="true">{`
         @media print {
           .print-friendly {
             break-inside: avoid;
             width: 100%;
           }
-          .print\:hidden {
+          .print\\:hidden {
             display: none !important;
           }
         }
