@@ -7,18 +7,18 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format, addDays, isAfter, isBefore, differenceInDays } from "date-fns";
-import { Calendar as CalendarIcon, AlertCircle, Bell, Search } from "lucide-react";
+import { Calendar as CalendarIcon, AlertCircle, Bell, Search, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { tr } from "date-fns/locale";
 
 export interface LicenseData {
   id: string;
   name: string;
+  phone: string;
   licensePlate: string;
   vehicleAge: number;
   startDate: Date;
   endDate: Date;
-  // New fields
   healthReport: {
     startDate: Date;
     endDate: Date;
@@ -46,12 +46,13 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentItem, setCurrentItem] = useState<LicenseData | null>(null);
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [licensePlate, setLicensePlate] = useState("");
   const [vehicleAge, setVehicleAge] = useState<number>(0);
   const [startDate, setStartDate] = useState<Date | undefined>(new Date());
   const [endDate, setEndDate] = useState<Date | undefined>(addDays(new Date(), 365));
   
-  // New state for additional fields
+  // State for additional fields
   const [healthStartDate, setHealthStartDate] = useState<Date | undefined>(new Date());
   const [healthEndDate, setHealthEndDate] = useState<Date | undefined>(addDays(new Date(), 365));
   const [seatStartDate, setSeatStartDate] = useState<Date | undefined>(new Date());
@@ -62,12 +63,14 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
   const filteredData = data.filter(
     (item) =>
       item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.licensePlate.toLowerCase().includes(searchTerm.toLowerCase())
+      item.licensePlate.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.phone.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleAddNew = () => {
     setCurrentItem(null);
     setName("");
+    setPhone("");
     setLicensePlate("");
     setVehicleAge(0);
     setStartDate(new Date());
@@ -85,6 +88,7 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
   const handleEdit = (item: LicenseData) => {
     setCurrentItem(item);
     setName(item.name);
+    setPhone(item.phone || "");
     setLicensePlate(item.licensePlate);
     setVehicleAge(item.vehicleAge);
     setStartDate(item.startDate);
@@ -108,6 +112,7 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
     const newItem: LicenseData = {
       id: currentItem?.id || crypto.randomUUID(),
       name,
+      phone,
       licensePlate,
       vehicleAge,
       startDate,
@@ -162,16 +167,13 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
           <TableHeader>
             <TableRow>
               <TableHead>Adı Soyadı</TableHead>
+              <TableHead>Telefon</TableHead>
               <TableHead>Araç Plakası</TableHead>
               <TableHead>Araç Yaşı</TableHead>
-              <TableHead>Ruhsat Başlangıç</TableHead>
-              <TableHead>Ruhsat Bitiş</TableHead>
-              <TableHead>Sağlık Raporu Başlangıç</TableHead>
-              <TableHead>Sağlık Raporu Bitiş</TableHead>
-              <TableHead>Koltuk Sigortası Başlangıç</TableHead>
-              <TableHead>Koltuk Sigortası Bitiş</TableHead>
-              <TableHead>Psikoteknik Başlangıç</TableHead>
-              <TableHead>Psikoteknik Bitiş</TableHead>
+              <TableHead>Ruhsat Tarihleri</TableHead>
+              <TableHead>Sağlık Raporu</TableHead>
+              <TableHead>Koltuk Sigortası</TableHead>
+              <TableHead>Psikoteknik</TableHead>
               <TableHead>Durum</TableHead>
               <TableHead className="text-right">İşlemler</TableHead>
             </TableRow>
@@ -200,31 +202,48 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
                     }
                   >
                     <TableCell>{item.name}</TableCell>
+                    <TableCell>{item.phone || "-"}</TableCell>
                     <TableCell>{item.licensePlate}</TableCell>
                     <TableCell>{item.vehicleAge}</TableCell>
-                    <TableCell>{format(item.startDate, "dd.MM.yyyy")}</TableCell>
                     <TableCell>
-                      <span className={licenseStatus === "danger" ? "text-danger" : licenseStatus === "warning" ? "text-amber-500" : ""}>
-                        {format(item.endDate, "dd.MM.yyyy")}
-                      </span>
+                      <div className="flex flex-col">
+                        <span className="text-xs text-gray-500">Başlangıç:</span>
+                        <span>{format(item.startDate, "dd.MM.yyyy")}</span>
+                        <span className="text-xs text-gray-500 mt-1">Bitiş:</span>
+                        <span className={licenseStatus === "danger" ? "text-danger" : licenseStatus === "warning" ? "text-amber-500" : ""}>
+                          {format(item.endDate, "dd.MM.yyyy")}
+                        </span>
+                      </div>
                     </TableCell>
-                    <TableCell>{item.healthReport ? format(item.healthReport.startDate, "dd.MM.yyyy") : "-"}</TableCell>
                     <TableCell>
-                      <span className={healthStatus === "danger" ? "text-danger" : healthStatus === "warning" ? "text-amber-500" : ""}>
-                        {item.healthReport ? format(item.healthReport.endDate, "dd.MM.yyyy") : "-"}
-                      </span>
+                      <div className="flex flex-col">
+                        <span className="text-xs text-gray-500">Başlangıç:</span>
+                        <span>{item.healthReport ? format(item.healthReport.startDate, "dd.MM.yyyy") : "-"}</span>
+                        <span className="text-xs text-gray-500 mt-1">Bitiş:</span>
+                        <span className={healthStatus === "danger" ? "text-danger" : healthStatus === "warning" ? "text-amber-500" : ""}>
+                          {item.healthReport ? format(item.healthReport.endDate, "dd.MM.yyyy") : "-"}
+                        </span>
+                      </div>
                     </TableCell>
-                    <TableCell>{item.seatInsurance ? format(item.seatInsurance.startDate, "dd.MM.yyyy") : "-"}</TableCell>
                     <TableCell>
-                      <span className={seatStatus === "danger" ? "text-danger" : seatStatus === "warning" ? "text-amber-500" : ""}>
-                        {item.seatInsurance ? format(item.seatInsurance.endDate, "dd.MM.yyyy") : "-"}
-                      </span>
+                      <div className="flex flex-col">
+                        <span className="text-xs text-gray-500">Başlangıç:</span>
+                        <span>{item.seatInsurance ? format(item.seatInsurance.startDate, "dd.MM.yyyy") : "-"}</span>
+                        <span className="text-xs text-gray-500 mt-1">Bitiş:</span>
+                        <span className={seatStatus === "danger" ? "text-danger" : seatStatus === "warning" ? "text-amber-500" : ""}>
+                          {item.seatInsurance ? format(item.seatInsurance.endDate, "dd.MM.yyyy") : "-"}
+                        </span>
+                      </div>
                     </TableCell>
-                    <TableCell>{item.psychotechnic ? format(item.psychotechnic.startDate, "dd.MM.yyyy") : "-"}</TableCell>
                     <TableCell>
-                      <span className={psychoStatus === "danger" ? "text-danger" : psychoStatus === "warning" ? "text-amber-500" : ""}>
-                        {item.psychotechnic ? format(item.psychotechnic.endDate, "dd.MM.yyyy") : "-"}
-                      </span>
+                      <div className="flex flex-col">
+                        <span className="text-xs text-gray-500">Başlangıç:</span>
+                        <span>{item.psychotechnic ? format(item.psychotechnic.startDate, "dd.MM.yyyy") : "-"}</span>
+                        <span className="text-xs text-gray-500 mt-1">Bitiş:</span>
+                        <span className={psychoStatus === "danger" ? "text-danger" : psychoStatus === "warning" ? "text-amber-500" : ""}>
+                          {item.psychotechnic ? format(item.psychotechnic.endDate, "dd.MM.yyyy") : "-"}
+                        </span>
+                      </div>
                     </TableCell>
                     <TableCell>
                       {worstStatus === "danger" && (
@@ -253,7 +272,7 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={13} className="h-24 text-center">
+                <TableCell colSpan={10} className="h-24 text-center">
                   Kayıt bulunamadı.
                 </TableCell>
               </TableRow>
@@ -276,6 +295,18 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="phone" className="text-right">
+                Telefon
+              </label>
+              <Input
+                id="phone"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="05xx xxx xx xx"
                 className="col-span-3"
               />
             </div>

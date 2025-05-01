@@ -5,9 +5,9 @@ import { DataTable, LicenseData } from "@/components/DataTable";
 import { toast } from "sonner";
 import { addDays } from "date-fns";
 
-const SPlaka = () => {
+const D4Plaka = () => {
   const [data, setData] = useState<LicenseData[]>(() => {
-    const savedData = localStorage.getItem("sPlaka");
+    const savedData = localStorage.getItem("d4Plaka");
     if (savedData) {
       try {
         const parsedData = JSON.parse(savedData);
@@ -50,7 +50,7 @@ const SPlaka = () => {
 
   useEffect(() => {
     // Save to localStorage whenever data changes
-    localStorage.setItem("sPlaka", JSON.stringify(data));
+    localStorage.setItem("d4Plaka", JSON.stringify(data));
   }, [data]);
 
   const handleSave = (newItem: LicenseData) => {
@@ -73,8 +73,8 @@ const SPlaka = () => {
   return (
     <Layout>
       <div className="container mx-auto">
-        <h2 className="text-xl font-semibold mb-4">S Plaka Kayıtları</h2>
-        <DataTable data={data} plateType="S" onSave={handleSave} />
+        <h2 className="text-xl font-semibold mb-4">D4 Plaka Kayıtları</h2>
+        <DataTable data={data} plateType="D4" onSave={handleSave} />
       </div>
     </Layout>
   );
@@ -87,68 +87,26 @@ function generateInitialData(): LicenseData[] {
   return [
     {
       id: "1",
-      name: "Fatma Öztürk",
+      name: "Emre Demir",
       phone: "05xx xxx xx xx",
-      licensePlate: "34 S 4321",
-      vehicleAge: 6,
-      startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
-      endDate: addDays(today, 5),
+      licensePlate: "34 D4 1234",
+      vehicleAge: 2,
+      startDate: new Date(today.getFullYear(), today.getMonth() - 3, today.getDate()),
+      endDate: addDays(today, 150),
       healthReport: {
-        startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
-        endDate: addDays(today, 15),
+        startDate: new Date(today.getFullYear(), today.getMonth() - 3, today.getDate()),
+        endDate: addDays(today, 150),
       },
       seatInsurance: {
-        startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
-        endDate: addDays(today, 25),
+        startDate: new Date(today.getFullYear(), today.getMonth() - 3, today.getDate()),
+        endDate: addDays(today, 150),
       },
       psychotechnic: {
-        startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
-        endDate: addDays(today, 35),
-      },
-    },
-    {
-      id: "2",
-      name: "Ali Kılıç",
-      phone: "05xx xxx xx xx",
-      licensePlate: "34 S 8765",
-      vehicleAge: 4,
-      startDate: new Date(today.getFullYear() - 2, today.getMonth(), today.getDate()),
-      endDate: addDays(today, 2),
-      healthReport: {
-        startDate: new Date(today.getFullYear() - 2, today.getMonth(), today.getDate()),
-        endDate: addDays(today, 12),
-      },
-      seatInsurance: {
-        startDate: new Date(today.getFullYear() - 2, today.getMonth(), today.getDate()),
-        endDate: addDays(today, 22),
-      },
-      psychotechnic: {
-        startDate: new Date(today.getFullYear() - 2, today.getMonth(), today.getDate()),
-        endDate: addDays(today, 32),
-      },
-    },
-    {
-      id: "3",
-      name: "Zeynep Şahin",
-      phone: "05xx xxx xx xx",
-      licensePlate: "34 S 1098",
-      vehicleAge: 7,
-      startDate: new Date(today.getFullYear() - 3, today.getMonth(), today.getDate()),
-      endDate: addDays(today, -10),
-      healthReport: {
-        startDate: new Date(today.getFullYear() - 3, today.getMonth(), today.getDate()),
-        endDate: addDays(today, -5),
-      },
-      seatInsurance: {
-        startDate: new Date(today.getFullYear() - 3, today.getMonth(), today.getDate()),
-        endDate: addDays(today, 45),
-      },
-      psychotechnic: {
-        startDate: new Date(today.getFullYear() - 3, today.getMonth(), today.getDate()),
-        endDate: addDays(today, -15),
+        startDate: new Date(today.getFullYear(), today.getMonth() - 3, today.getDate()),
+        endDate: addDays(today, 150),
       },
     },
   ];
 }
 
-export default SPlaka;
+export default D4Plaka;
