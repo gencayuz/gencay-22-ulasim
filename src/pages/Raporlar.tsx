@@ -1,4 +1,3 @@
-
 import { useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
@@ -313,7 +312,7 @@ const Raporlar = () => {
         )}
       </div>
 
-      <style jsx="true" global="true">{`
+      <style>{`
         @media print {
           .print-friendly {
             break-inside: avoid;
