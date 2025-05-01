@@ -80,7 +80,7 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
           >
             <span>
               <FileUp className="mr-1 h-4 w-4" />
-              {record.licenseDocument ? "Değiştir" : "PDF Yükle"}
+              Düzenle
             </span>
           </Button>
         </label>
