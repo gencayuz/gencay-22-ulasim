@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,7 +5,7 @@ import { Layout } from "@/components/Layout";
 import { FileText, ClipboardList, FileCheck, BarChart3, AlertCircle, FileBarChart, LogOut, Phone } from "lucide-react";
 import { differenceInDays } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { LicenseData } from "@/components/DataTable";
+import { LicenseData } from "@/types/license";
 
 const TotalCard = ({ 
   title, 
