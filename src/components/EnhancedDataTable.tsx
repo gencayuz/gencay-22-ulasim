@@ -3,7 +3,7 @@ import { useState } from "react";
 import { DataTable } from "@/components/DataTable";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { MessageSquare, FileUp, Phone, FileText, FileExcel } from "lucide-react";
+import { MessageSquare, FileUp, Phone, FileText, FileCog } from "lucide-react";
 import { 
   Dialog,
   DialogContent,
@@ -210,7 +210,7 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
           onClick={exportToExcel}
           className="flex items-center"
         >
-          <FileExcel className="mr-1 h-4 w-4" />
+          <FileCog className="mr-1 h-4 w-4" />
           Excel'e Aktar
         </Button>
         <Button 
@@ -226,8 +226,7 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
       <DataTable 
         data={data} 
         plateType={plateType} 
-        onSave={onSave} 
-        renderActionButtons={renderActionButtons}
+        onSave={onSave}
       />
       
       <Dialog open={smsDialogOpen} onOpenChange={setSmsDialogOpen}>

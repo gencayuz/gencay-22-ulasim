@@ -1,12 +1,29 @@
 
 import { Layout } from "@/components/Layout";
 import { useEffect, useState } from "react";
-import { addDays, format, isAfter, isBefore, parseISO } from "date-fns";
-import { ButtonGroup, ButtonSegmented, Card, CardContent, CardHeader, CardTitle, ExcelButton, Grid, LineChart, Pie, PieChart, Table, Title } from "@tremor/react";
-import { htmlToImage } from "html-to-image";
-import jsPDF from "jspdf";
+import { addDays, format, isAfter, isBefore } from "date-fns";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { LicenseData } from "@/types/license";
 import { tr } from "date-fns/locale";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  ResponsiveContainer, 
+  PieChart as ReChartsPieChart, 
+  Pie, 
+  Cell, 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend 
+} from "recharts";
+import * as htmlToImage from 'html-to-image';
+import jsPDF from "jspdf";
+import { FileDown, FileSpreadsheet } from "lucide-react";
+import * as XLSX from 'xlsx';
 
 const Raporlar = () => {
   const [data, setData] = useState<LicenseData[]>([]);
@@ -222,6 +239,8 @@ const Raporlar = () => {
     { name: "D4 Plaka", value: data.filter(i => i.type === "D4").length },
     { name: "D4S Plaka", value: data.filter(i => i.type === "D4S").length },
   ];
+
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
   
   // Expiring documents by month
   const today = new Date();
@@ -276,157 +295,154 @@ const Raporlar = () => {
       console.error('Error generating PDF:', error);
     }
   };
+
+  // Export to Excel function
+  const exportToExcel = () => {
+    const formattedData = data.map(item => ({
+      "Tip": item.type,
+      "Adı Soyadı": item.name,
+      "Araç Plakası": item.licensePlate,
+      "Telefon": item.phone || "-",
+      "Araç Yaşı": item.vehicleAge,
+      "Ruhsat Bitiş": format(item.endDate, "dd.MM.yyyy"),
+      "Sağlık Raporu Bitiş": item.healthReport ? format(item.healthReport.endDate, "dd.MM.yyyy") : "-",
+      "Koltuk Sigortası Bitiş": item.seatInsurance ? format(item.seatInsurance.endDate, "dd.MM.yyyy") : "-",
+      "Psikoteknik Bitiş": item.psychotechnic ? format(item.psychotechnic.endDate, "dd.MM.yyyy") : "-",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Plaka Kayıtları");
+    XLSX.writeFile(workbook, "plaka-takip-verileri.xlsx");
+  };
   
   return (
     <Layout>
       <style>
         {`
-        .tremor-Card-root {
-          margin-bottom: 20px;
-        }
         .chart-container {
           height: 300px;
         }
+        .card-stats {
+          margin-bottom: 20px;
+        }
         `}
       </style>
+      
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Raporlar</h1>
           <div className="flex gap-2">
-            <ButtonGroup>
-              <ButtonSegmented 
-                text="Haftalık" 
-                icon={() => <span className="text-xs">7g</span>} 
-                onClick={() => setTimeRange("week")} 
-                selected={timeRange === "week"}
-              />
-              <ButtonSegmented 
-                text="Aylık" 
-                icon={() => <span className="text-xs">30g</span>} 
-                onClick={() => setTimeRange("month")} 
-                selected={timeRange === "month"} 
-              />
-              <ButtonSegmented 
-                text="3 Aylık" 
-                icon={() => <span className="text-xs">90g</span>} 
-                onClick={() => setTimeRange("quarter")} 
-                selected={timeRange === "quarter"} 
-              />
-            </ButtonGroup>
-            <ExcelButton 
-              text="Excel" 
-              onDownload={() => data} 
-              filename="plaka-takip-verileri" 
-            />
-            <button 
-              onClick={exportPDF}
-              className="px-3 py-1.5 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600 transition-colors"
+            <Tabs value={timeRange} onValueChange={setTimeRange} className="w-auto">
+              <TabsList>
+                <TabsTrigger value="week">7 Gün</TabsTrigger>
+                <TabsTrigger value="month">30 Gün</TabsTrigger>
+                <TabsTrigger value="quarter">90 Gün</TabsTrigger>
+              </TabsList>
+            </Tabs>
+            <Button 
+              variant="outline"
+              onClick={exportToExcel}
+              className="flex items-center gap-1"
             >
+              <FileSpreadsheet className="h-4 w-4" />
+              Excel
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={exportPDF}
+              className="flex items-center gap-1"
+            >
+              <FileDown className="h-4 w-4" />
               PDF
-            </button>
+            </Button>
           </div>
         </div>
         
         <div id="report-container">
-          <Grid numItems={1} numItemsSm={2} numItemsLg={4} className="gap-4 mb-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Plakalar</CardTitle>
-              </CardHeader>
-              <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <Card className="card-stats">
+              <CardContent className="pt-6">
                 <div className="text-3xl font-bold">{stats.licenses}</div>
-                <p className="text-gray-500">Süresi dolacak</p>
+                <CardTitle className="text-lg">Plakalar</CardTitle>
+                <p className="text-gray-500 text-sm">Süresi dolacak</p>
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Sağlık Raporları</CardTitle>
-              </CardHeader>
-              <CardContent>
+            <Card className="card-stats">
+              <CardContent className="pt-6">
                 <div className="text-3xl font-bold">{stats.health}</div>
-                <p className="text-gray-500">Süresi dolacak</p>
+                <CardTitle className="text-lg">Sağlık Raporları</CardTitle>
+                <p className="text-gray-500 text-sm">Süresi dolacak</p>
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Koltuk Sigortaları</CardTitle>
-              </CardHeader>
-              <CardContent>
+            <Card className="card-stats">
+              <CardContent className="pt-6">
                 <div className="text-3xl font-bold">{stats.seat}</div>
-                <p className="text-gray-500">Süresi dolacak</p>
+                <CardTitle className="text-lg">Koltuk Sigortaları</CardTitle>
+                <p className="text-gray-500 text-sm">Süresi dolacak</p>
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Psikoteknik</CardTitle>
-              </CardHeader>
-              <CardContent>
+            <Card className="card-stats">
+              <CardContent className="pt-6">
                 <div className="text-3xl font-bold">{stats.psycho}</div>
-                <p className="text-gray-500">Süresi dolacak</p>
+                <CardTitle className="text-lg">Psikoteknik</CardTitle>
+                <p className="text-gray-500 text-sm">Süresi dolacak</p>
               </CardContent>
             </Card>
-          </Grid>
+          </div>
           
-          <Grid numItems={1} numItemsSm={2} className="gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <Card>
-              <CardHeader>
-                <CardTitle>Araç Tipi Dağılımı</CardTitle>
-              </CardHeader>
-              <CardContent>
+              <CardContent className="pt-6">
+                <CardTitle className="mb-4">Araç Tipi Dağılımı</CardTitle>
                 <div className="chart-container">
-                  <PieChart 
-                    data={vehicleDistribution} 
-                    index="name"
-                    category="value"
-                    variant="pie"
-                  />
+                  <ResponsiveContainer width="100%" height="100%">
+                    <ReChartsPieChart>
+                      <Pie
+                        data={vehicleDistribution}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {vehicleDistribution.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend />
+                    </ReChartsPieChart>
+                  </ResponsiveContainer>
                 </div>
               </CardContent>
             </Card>
             <Card>
-              <CardHeader>
-                <CardTitle>Aylara Göre Süreleri Dolacak Belgeler</CardTitle>
-              </CardHeader>
-              <CardContent>
+              <CardContent className="pt-6">
+                <CardTitle className="mb-4">Aylara Göre Süreleri Dolacak Belgeler</CardTitle>
                 <div className="chart-container">
-                  <LineChart 
-                    data={nextMonths}
-                    index="month"
-                    categories={["licenses", "health", "seat", "psycho"]}
-                    colors={["blue", "green", "red", "purple"]}
-                    yAxisWidth={30}
-                    valueFormatter={(value) => `${value} belge`}
-                    customTooltip={({ payload }) => {
-                      if (!payload || payload.length === 0) return null;
-                      return (
-                        <div className="p-2 bg-white shadow-md rounded border">
-                          <div className="text-sm font-medium">{payload[0].payload.month}</div>
-                          <div className="flex flex-col gap-1 mt-2">
-                            <div className="flex items-center gap-1">
-                              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                              <span>Ruhsat: {payload[0]?.value || 0}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                              <span>Sağlık: {payload[1]?.value || 0}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                              <span>Koltuk: {payload[2]?.value || 0}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                              <span>Psikoteknik: {payload[3]?.value || 0}</span>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    }}
-                  />
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart
+                      data={nextMonths}
+                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Line type="monotone" dataKey="licenses" stroke="#8884d8" name="Ruhsat" />
+                      <Line type="monotone" dataKey="health" stroke="#82ca9d" name="Sağlık" />
+                      <Line type="monotone" dataKey="seat" stroke="#ff7300" name="Koltuk" />
+                      <Line type="monotone" dataKey="psycho" stroke="#0088FE" name="Psikoteknik" />
+                    </LineChart>
+                  </ResponsiveContainer>
                 </div>
               </CardContent>
             </Card>
-          </Grid>
+          </div>
         </div>
       </div>
     </Layout>
