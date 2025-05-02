@@ -1,303 +1,434 @@
 
-import { useMemo, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { differenceInDays } from "date-fns";
 import { Layout } from "@/components/Layout";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Phone, FileUp, FileText } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import type { LicenseData } from "@/components/DataTable";
-
-type DocumentType = "healthReport" | "seatInsurance" | "psychotechnic" | "srcCertificate";
+import { useEffect, useState } from "react";
+import { addDays, format, isAfter, isBefore, parseISO } from "date-fns";
+import { ButtonGroup, ButtonSegmented, Card, CardContent, CardHeader, CardTitle, ExcelButton, Grid, LineChart, Pie, PieChart, Table, Title } from "@tremor/react";
+import { htmlToImage } from "html-to-image";
+import jsPDF from "jspdf";
+import { LicenseData } from "@/types/license";
+import { tr } from "date-fns/locale";
 
 const Raporlar = () => {
-  const navigate = useNavigate();
-  const [activeReportTab, setActiveReportTab] = useState<string>("overview");
+  const [data, setData] = useState<LicenseData[]>([]);
+  const [timeRange, setTimeRange] = useState<string>("month");
   
-  const allData = useMemo(() => {
-    const mPlaka = JSON.parse(localStorage.getItem("mPlaka") || "[]");
-    const sPlaka = JSON.parse(localStorage.getItem("sPlaka") || "[]");
-    const jPlaka = JSON.parse(localStorage.getItem("jPlaka") || "[]");
-    const d4Plaka = JSON.parse(localStorage.getItem("d4Plaka") || "[]");
-    const d4sPlaka = JSON.parse(localStorage.getItem("d4sPlaka") || "[]");
-
-    const mPlakaWithType = mPlaka.map((item: any) => ({ ...item, type: "M Plaka", endDate: new Date(item.endDate) }));
-    const sPlakaWithType = sPlaka.map((item: any) => ({ ...item, type: "S Plaka", endDate: new Date(item.endDate) }));
-    const jPlakaWithType = jPlaka.map((item: any) => ({ ...item, type: "T Plaka", endDate: new Date(item.endDate) }));
-    const d4PlakaWithType = d4Plaka.map((item: any) => ({ ...item, type: "D4 Plaka", endDate: new Date(item.endDate) }));
-    const d4sPlakaWithType = d4sPlaka.map((item: any) => ({ ...item, type: "D4S Plaka", endDate: new Date(item.endDate) }));
-
-    return [...mPlakaWithType, ...sPlakaWithType, ...jPlakaWithType, ...d4PlakaWithType, ...d4sPlakaWithType];
+  useEffect(() => {
+    // Combine all the data from different license types
+    const loadData = () => {
+      const allData: LicenseData[] = [];
+      
+      // Load data from localStorage
+      const mData = localStorage.getItem("mPlaka");
+      const sData = localStorage.getItem("sPlaka");
+      const jData = localStorage.getItem("jPlaka");
+      const d4Data = localStorage.getItem("d4Plaka");
+      const d4sData = localStorage.getItem("d4sPlaka");
+      
+      // Parse and add type information
+      if (mData) {
+        try {
+          const parsed = JSON.parse(mData).map((item: any) => ({
+            ...item,
+            type: "M",
+            startDate: new Date(item.startDate),
+            endDate: new Date(item.endDate),
+            healthReport: item.healthReport ? {
+              startDate: new Date(item.healthReport.startDate),
+              endDate: new Date(item.healthReport.endDate),
+            } : null,
+            seatInsurance: item.seatInsurance ? {
+              startDate: new Date(item.seatInsurance.startDate),
+              endDate: new Date(item.seatInsurance.endDate),
+            } : null,
+            psychotechnic: item.psychotechnic ? {
+              startDate: new Date(item.psychotechnic.startDate),
+              endDate: new Date(item.psychotechnic.endDate),
+            } : null,
+            srcCertificate: item.srcCertificate ? {
+              startDate: new Date(item.srcCertificate.startDate),
+              endDate: new Date(item.srcCertificate.endDate),
+            } : null,
+          }));
+          allData.push(...parsed);
+        } catch (error) {
+          console.error("Error parsing M plaka data", error);
+        }
+      }
+      
+      // Process other data types similarly
+      if (sData) {
+        try {
+          const parsed = JSON.parse(sData).map((item: any) => ({
+            ...item,
+            type: "S",
+            startDate: new Date(item.startDate),
+            endDate: new Date(item.endDate),
+            healthReport: item.healthReport ? {
+              startDate: new Date(item.healthReport.startDate),
+              endDate: new Date(item.healthReport.endDate),
+            } : null,
+            seatInsurance: item.seatInsurance ? {
+              startDate: new Date(item.seatInsurance.startDate),
+              endDate: new Date(item.seatInsurance.endDate),
+            } : null,
+            psychotechnic: item.psychotechnic ? {
+              startDate: new Date(item.psychotechnic.startDate),
+              endDate: new Date(item.psychotechnic.endDate),
+            } : null,
+          }));
+          allData.push(...parsed);
+        } catch (error) {
+          console.error("Error parsing S plaka data", error);
+        }
+      }
+      
+      // Add J plaka
+      if (jData) {
+        try {
+          const parsed = JSON.parse(jData).map((item: any) => ({
+            ...item,
+            type: "J",
+            startDate: new Date(item.startDate),
+            endDate: new Date(item.endDate),
+            healthReport: item.healthReport ? {
+              startDate: new Date(item.healthReport.startDate),
+              endDate: new Date(item.healthReport.endDate),
+            } : null,
+            seatInsurance: item.seatInsurance ? {
+              startDate: new Date(item.seatInsurance.startDate),
+              endDate: new Date(item.seatInsurance.endDate),
+            } : null,
+            psychotechnic: item.psychotechnic ? {
+              startDate: new Date(item.psychotechnic.startDate),
+              endDate: new Date(item.psychotechnic.endDate),
+            } : null,
+          }));
+          allData.push(...parsed);
+        } catch (error) {
+          console.error("Error parsing J plaka data", error);
+        }
+      }
+      
+      // Add D4 plaka
+      if (d4Data) {
+        try {
+          const parsed = JSON.parse(d4Data).map((item: any) => ({
+            ...item,
+            type: "D4",
+            startDate: new Date(item.startDate),
+            endDate: new Date(item.endDate),
+            healthReport: item.healthReport ? {
+              startDate: new Date(item.healthReport.startDate),
+              endDate: new Date(item.healthReport.endDate),
+            } : null,
+            seatInsurance: item.seatInsurance ? {
+              startDate: new Date(item.seatInsurance.startDate),
+              endDate: new Date(item.seatInsurance.endDate),
+            } : null,
+            psychotechnic: item.psychotechnic ? {
+              startDate: new Date(item.psychotechnic.startDate),
+              endDate: new Date(item.psychotechnic.endDate),
+            } : null,
+          }));
+          allData.push(...parsed);
+        } catch (error) {
+          console.error("Error parsing D4 plaka data", error);
+        }
+      }
+      
+      // Add D4S plaka
+      if (d4sData) {
+        try {
+          const parsed = JSON.parse(d4sData).map((item: any) => ({
+            ...item,
+            type: "D4S",
+            startDate: new Date(item.startDate),
+            endDate: new Date(item.endDate),
+            healthReport: item.healthReport ? {
+              startDate: new Date(item.healthReport.startDate),
+              endDate: new Date(item.healthReport.endDate),
+            } : null,
+            seatInsurance: item.seatInsurance ? {
+              startDate: new Date(item.seatInsurance.startDate),
+              endDate: new Date(item.seatInsurance.endDate),
+            } : null,
+            psychotechnic: item.psychotechnic ? {
+              startDate: new Date(item.psychotechnic.startDate),
+              endDate: new Date(item.psychotechnic.endDate),
+            } : null,
+          }));
+          allData.push(...parsed);
+        } catch (error) {
+          console.error("Error parsing D4S plaka data", error);
+        }
+      }
+      
+      return allData;
+    };
+    
+    setData(loadData());
   }, []);
-
-  const plateTypeStats = useMemo(() => {
-    const stats = [
-      { name: "M Plaka", value: allData.filter((item: any) => item.type === "M Plaka").length },
-      { name: "S Plaka", value: allData.filter((item: any) => item.type === "S Plaka").length },
-      { name: "T Plaka", value: allData.filter((item: any) => item.type === "T Plaka").length },
-      { name: "D4 Plaka", value: allData.filter((item: any) => item.type === "D4 Plaka").length },
-      { name: "D4S Plaka", value: allData.filter((item: any) => item.type === "D4S Plaka").length },
-    ];
-    return stats;
-  }, [allData]);
-
-  const statusStats = useMemo(() => {
-    const today = new Date();
+  
+  // Calculate expiry stats based on the selected time range
+  const getExpiryStats = () => {
+    const now = new Date();
+    let cutoffDate = now;
     
-    const expired = allData.filter((item: any) => {
-      const endDate = new Date(item.endDate);
-      return differenceInDays(endDate, today) < 0;
-    }).length;
+    if (timeRange === "week") {
+      cutoffDate = addDays(now, 7);
+    } else if (timeRange === "month") {
+      cutoffDate = addDays(now, 30);
+    } else if (timeRange === "quarter") {
+      cutoffDate = addDays(now, 90);
+    }
     
-    const expiringSoon = allData.filter((item: any) => {
-      const endDate = new Date(item.endDate);
-      const diff = differenceInDays(endDate, today);
-      return diff >= 0 && diff <= 7;
-    }).length;
+    const expiringLicenses = data.filter(item => 
+      isAfter(item.endDate, now) && isBefore(item.endDate, cutoffDate)
+    );
     
-    const valid = allData.filter((item: any) => {
-      const endDate = new Date(item.endDate);
-      return differenceInDays(endDate, today) > 7;
-    }).length;
-
-    return [
-      { name: "Süresi Dolmuş", value: expired },
-      { name: "Yakında Dolacak", value: expiringSoon },
-      { name: "Geçerli", value: valid },
-    ];
-  }, [allData]);
-
-  const ageStats = useMemo(() => {
-    const ageGroups = [
-      { name: "0-2 Yaş", value: 0 },
-      { name: "3-5 Yaş", value: 0 },
-      { name: "6-10 Yaş", value: 0 },
-      { name: "10+ Yaş", value: 0 },
-    ];
-
-    allData.forEach((item: any) => {
-      const age = item.vehicleAge;
-      if (age <= 2) ageGroups[0].value++;
-      else if (age <= 5) ageGroups[1].value++;
-      else if (age <= 10) ageGroups[2].value++;
-      else ageGroups[3].value++;
-    });
-
-    return ageGroups;
-  }, [allData]);
-
-  const getExpiringDocuments = (docType: DocumentType, days: number = 30) => {
-    const today = new Date();
+    const expiringHealth = data.filter(item => 
+      item.healthReport && 
+      isAfter(item.healthReport.endDate, now) && 
+      isBefore(item.healthReport.endDate, cutoffDate)
+    );
     
-    return allData.filter((item: any) => {
-      if (!item[docType]) return false;
-      
-      const docEndDate = new Date(item[docType].endDate);
-      const daysLeft = differenceInDays(docEndDate, today);
-      
-      return daysLeft >= 0 && daysLeft <= days;
-    }).map((item: any) => ({
-      ...item,
-      daysLeft: differenceInDays(new Date(item[docType].endDate), today)
-    })).sort((a: any, b: any) => a.daysLeft - b.daysLeft);
+    const expiringSeat = data.filter(item => 
+      item.seatInsurance && 
+      isAfter(item.seatInsurance.endDate, now) && 
+      isBefore(item.seatInsurance.endDate, cutoffDate)
+    );
+    
+    const expiringPsycho = data.filter(item => 
+      item.psychotechnic && 
+      isAfter(item.psychotechnic.endDate, now) && 
+      isBefore(item.psychotechnic.endDate, cutoffDate)
+    );
+    
+    return {
+      licenses: expiringLicenses.length,
+      health: expiringHealth.length,
+      seat: expiringSeat.length,
+      psycho: expiringPsycho.length
+    };
   };
-
-  const expiringHealthReports = useMemo(() => getExpiringDocuments("healthReport"), [allData]);
-  const expiringSeatInsurance = useMemo(() => getExpiringDocuments("seatInsurance"), [allData]);
-  const expiringPsychotechnic = useMemo(() => getExpiringDocuments("psychotechnic"), [allData]);
-  const expiringSrcCertificates = useMemo(() => getExpiringDocuments("srcCertificate"), [allData]);
-
-  const printReport = () => {
-    window.print();
+  
+  const stats = getExpiryStats();
+  
+  // Distribution of vehicle types
+  const vehicleDistribution = [
+    { name: "M Plaka", value: data.filter(i => i.type === "M").length },
+    { name: "S Plaka", value: data.filter(i => i.type === "S").length },
+    { name: "J Plaka", value: data.filter(i => i.type === "J").length },
+    { name: "D4 Plaka", value: data.filter(i => i.type === "D4").length },
+    { name: "D4S Plaka", value: data.filter(i => i.type === "D4S").length },
+  ];
+  
+  // Expiring documents by month
+  const today = new Date();
+  const nextMonths = Array.from({ length: 6 }, (_, i) => {
+    const date = addDays(today, i * 30);
+    return {
+      month: format(date, "MMMM", { locale: tr }),
+      licenses: data.filter(item => {
+        const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+        const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+        return isAfter(item.endDate, startOfMonth) && isBefore(item.endDate, endOfMonth);
+      }).length,
+      health: data.filter(item => 
+        item.healthReport && 
+        isAfter(item.healthReport.endDate, new Date(date.getFullYear(), date.getMonth(), 1)) && 
+        isBefore(item.healthReport.endDate, new Date(date.getFullYear(), date.getMonth() + 1, 0))
+      ).length,
+      seat: data.filter(item => 
+        item.seatInsurance && 
+        isAfter(item.seatInsurance.endDate, new Date(date.getFullYear(), date.getMonth(), 1)) && 
+        isBefore(item.seatInsurance.endDate, new Date(date.getFullYear(), date.getMonth() + 1, 0))
+      ).length,
+      psycho: data.filter(item => 
+        item.psychotechnic && 
+        isAfter(item.psychotechnic.endDate, new Date(date.getFullYear(), date.getMonth(), 1)) && 
+        isBefore(item.psychotechnic.endDate, new Date(date.getFullYear(), date.getMonth() + 1, 0))
+      ).length,
+    };
+  });
+  
+  // Export PDF function
+  const exportPDF = async () => {
+    try {
+      const element = document.getElementById('report-container');
+      if (!element) return;
+      
+      const canvas = await htmlToImage.toCanvas(element);
+      const imgData = canvas.toDataURL('image/png');
+      
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+      const imgX = (pdfWidth - imgWidth * ratio) / 2;
+      
+      pdf.addImage(imgData, 'PNG', imgX, 10, imgWidth * ratio, imgHeight * ratio);
+      pdf.save('plaka-takip-raporu.pdf');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    }
   };
-
-  const COLORS = ["#ea384c", "#FEF7CD", "#65C466"];
-  const PLATE_COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#a4de6c"];
-
-  const DocumentExpiryTable = ({ documents, title }: { documents: any[], title: string }) => (
-    <Card className="print-friendly">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div>
-          <CardTitle>{title}</CardTitle>
-          <CardDescription>Son 30 gün içinde süresi dolacak belgeler</CardDescription>
-        </div>
-        <Button onClick={printReport} className="print:hidden">
-          <FileText className="mr-2 h-4 w-4" />
-          Yazdır
-        </Button>
-      </CardHeader>
-      <CardContent>
-        {documents.length > 0 ? (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Adı Soyadı</TableHead>
-                <TableHead>Telefon</TableHead>
-                <TableHead>Plaka</TableHead>
-                <TableHead>Türü</TableHead>
-                <TableHead>Bitiş Tarihi</TableHead>
-                <TableHead>Kalan Gün</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {documents.map((doc: any) => (
-                <TableRow key={`${doc.id}-${title}`}>
-                  <TableCell>{doc.name}</TableCell>
-                  <TableCell className="flex items-center gap-1">
-                    <Phone className="h-3 w-3" />
-                    {doc.phone || "-"}
-                  </TableCell>
-                  <TableCell>{doc.licensePlate}</TableCell>
-                  <TableCell>{doc.type}</TableCell>
-                  <TableCell>
-                    {new Date(doc[title.toLowerCase().replace(/\s+/g, '').replace('belgeleri', '')].endDate).toLocaleDateString('tr-TR')}
-                  </TableCell>
-                  <TableCell>
-                    <span className={`${doc.daysLeft <= 7 ? "text-amber-500 font-bold" : ""}`}>
-                      {doc.daysLeft} gün
-                    </span>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <p className="text-center py-8 text-muted-foreground">Yakında süresi dolacak belge bulunamadı</p>
-        )}
-      </CardContent>
-    </Card>
-  );
-
+  
   return (
     <Layout>
-      <Tabs defaultValue="overview" className="w-full mb-6">
-        <TabsList>
-          <TabsTrigger value="home" onClick={() => navigate("/")}>Ana Sayfa</TabsTrigger>
-          <TabsTrigger value="overview" onClick={() => setActiveReportTab("overview")}>Genel Bakış</TabsTrigger>
-          <TabsTrigger value="health" onClick={() => setActiveReportTab("health")}>Sağlık Raporu</TabsTrigger>
-          <TabsTrigger value="insurance" onClick={() => setActiveReportTab("insurance")}>Koltuk Sigortası</TabsTrigger>
-          <TabsTrigger value="psycho" onClick={() => setActiveReportTab("psycho")}>Psikoteknik</TabsTrigger>
-          <TabsTrigger value="src" onClick={() => setActiveReportTab("src")}>SRC Belgesi</TabsTrigger>
-        </TabsList>
-      </Tabs>
-
-      <div className="container mx-auto">
-        <h2 className="text-xl font-semibold mb-4">Sistem Raporları</h2>
-
-        {activeReportTab === "overview" && (
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Belge Durumu</CardTitle>
-                <CardDescription>Tüm belgelerin geçerlilik durumu</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={statusStats}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={true}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    >
-                      {statusStats.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(value) => [`${value} kayıt`, '']} />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Plaka Türü Dağılımı</CardTitle>
-                <CardDescription>Her plaka türündeki kayıt sayısı</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={plateTypeStats}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip formatter={(value) => [`${value} kayıt`, '']} />
-                    <Legend />
-                    <Bar dataKey="value" name="Kayıt Sayısı" fill="#9b87f5" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            <Card className="md:col-span-2">
-              <CardHeader>
-                <CardTitle>Araç Yaşı Dağılımı</CardTitle>
-                <CardDescription>Kayıtlı araçların yaş dağılımı</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={ageStats}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip formatter={(value) => [`${value} araç`, '']} />
-                    <Legend />
-                    <Bar dataKey="value" name="Araç Sayısı" fill="#1A1F2C" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {activeReportTab === "health" && (
-          <DocumentExpiryTable 
-            documents={expiringHealthReports} 
-            title="Sağlık Raporu Belgeleri" 
-          />
-        )}
-        
-        {activeReportTab === "insurance" && (
-          <DocumentExpiryTable 
-            documents={expiringSeatInsurance} 
-            title="Koltuk Sigortası Belgeleri" 
-          />
-        )}
-        
-        {activeReportTab === "psycho" && (
-          <DocumentExpiryTable 
-            documents={expiringPsychotechnic} 
-            title="Psikoteknik Belgeleri" 
-          />
-        )}
-        
-        {activeReportTab === "src" && (
-          <DocumentExpiryTable 
-            documents={expiringSrcCertificates} 
-            title="SRC Belgeleri" 
-          />
-        )}
-      </div>
-
-      <style jsx global>{`
-        @media print {
-          .print-friendly {
-            break-inside: avoid;
-            width: 100%;
-          }
-          .print\:hidden {
-            display: none !important;
-          }
+      <style>
+        {`
+        .tremor-Card-root {
+          margin-bottom: 20px;
         }
-      `}</style>
+        .chart-container {
+          height: 300px;
+        }
+        `}
+      </style>
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Raporlar</h1>
+          <div className="flex gap-2">
+            <ButtonGroup>
+              <ButtonSegmented 
+                text="Haftalık" 
+                icon={() => <span className="text-xs">7g</span>} 
+                onClick={() => setTimeRange("week")} 
+                selected={timeRange === "week"}
+              />
+              <ButtonSegmented 
+                text="Aylık" 
+                icon={() => <span className="text-xs">30g</span>} 
+                onClick={() => setTimeRange("month")} 
+                selected={timeRange === "month"} 
+              />
+              <ButtonSegmented 
+                text="3 Aylık" 
+                icon={() => <span className="text-xs">90g</span>} 
+                onClick={() => setTimeRange("quarter")} 
+                selected={timeRange === "quarter"} 
+              />
+            </ButtonGroup>
+            <ExcelButton 
+              text="Excel" 
+              onDownload={() => data} 
+              filename="plaka-takip-verileri" 
+            />
+            <button 
+              onClick={exportPDF}
+              className="px-3 py-1.5 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600 transition-colors"
+            >
+              PDF
+            </button>
+          </div>
+        </div>
+        
+        <div id="report-container">
+          <Grid numItems={1} numItemsSm={2} numItemsLg={4} className="gap-4 mb-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Plakalar</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{stats.licenses}</div>
+                <p className="text-gray-500">Süresi dolacak</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Sağlık Raporları</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{stats.health}</div>
+                <p className="text-gray-500">Süresi dolacak</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Koltuk Sigortaları</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{stats.seat}</div>
+                <p className="text-gray-500">Süresi dolacak</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Psikoteknik</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{stats.psycho}</div>
+                <p className="text-gray-500">Süresi dolacak</p>
+              </CardContent>
+            </Card>
+          </Grid>
+          
+          <Grid numItems={1} numItemsSm={2} className="gap-4 mb-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Araç Tipi Dağılımı</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="chart-container">
+                  <PieChart 
+                    data={vehicleDistribution} 
+                    index="name"
+                    category="value"
+                    variant="pie"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Aylara Göre Süreleri Dolacak Belgeler</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="chart-container">
+                  <LineChart 
+                    data={nextMonths}
+                    index="month"
+                    categories={["licenses", "health", "seat", "psycho"]}
+                    colors={["blue", "green", "red", "purple"]}
+                    yAxisWidth={30}
+                    valueFormatter={(value) => `${value} belge`}
+                    customTooltip={({ payload }) => {
+                      if (!payload || payload.length === 0) return null;
+                      return (
+                        <div className="p-2 bg-white shadow-md rounded border">
+                          <div className="text-sm font-medium">{payload[0].payload.month}</div>
+                          <div className="flex flex-col gap-1 mt-2">
+                            <div className="flex items-center gap-1">
+                              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                              <span>Ruhsat: {payload[0]?.value || 0}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                              <span>Sağlık: {payload[1]?.value || 0}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                              <span>Koltuk: {payload[2]?.value || 0}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                              <span>Psikoteknik: {payload[3]?.value || 0}</span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </Grid>
+        </div>
+      </div>
     </Layout>
   );
 };

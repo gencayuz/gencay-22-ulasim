@@ -10,36 +10,18 @@ import { format, addDays, isAfter, isBefore, differenceInDays } from "date-fns";
 import { Calendar as CalendarIcon, AlertCircle, Bell, Search, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { tr } from "date-fns/locale";
+import { LicenseData } from "@/types/license";
+import { getOwnerTypeLabel } from "@/utils/ownerTypeUtils";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
-export interface LicenseData {
-  id: string;
-  name: string;
-  phone: string;
-  licensePlate: string;
-  vehicleAge: number;
-  startDate: Date;
-  endDate: Date;
-  healthReport: {
-    startDate: Date;
-    endDate: Date;
-  };
-  seatInsurance: {
-    startDate: Date;
-    endDate: Date;
-  };
-  psychotechnic: {
-    startDate: Date;
-    endDate: Date;
-  };
-}
-
-interface DataTableProps {
+export interface DataTableProps {
   data: LicenseData[];
   plateType: string;
   onSave: (data: LicenseData) => void;
+  renderActionButtons?: (record: LicenseData) => React.ReactNode;
 }
 
-export function DataTable({ data, plateType, onSave }: DataTableProps) {
+export function DataTable({ data, plateType, onSave, renderActionButtons }: DataTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   
   // Dialog state for adding/editing entries
@@ -51,6 +33,7 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
   const [vehicleAge, setVehicleAge] = useState<number>(0);
   const [startDate, setStartDate] = useState<Date | undefined>(new Date());
   const [endDate, setEndDate] = useState<Date | undefined>(addDays(new Date(), 365));
+  const [ownerType, setOwnerType] = useState<"owner" | "driver">("owner");
   
   // State for additional fields
   const [healthStartDate, setHealthStartDate] = useState<Date | undefined>(new Date());
@@ -75,6 +58,7 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
     setVehicleAge(0);
     setStartDate(new Date());
     setEndDate(addDays(new Date(), 365));
+    setOwnerType("owner");
     // Reset additional fields
     setHealthStartDate(new Date());
     setHealthEndDate(addDays(new Date(), 365));
@@ -93,6 +77,7 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
     setVehicleAge(item.vehicleAge);
     setStartDate(item.startDate);
     setEndDate(item.endDate);
+    setOwnerType(item.ownerType || "owner");
     
     // Set additional fields if they exist, otherwise use defaults
     setHealthStartDate(item.healthReport?.startDate || new Date());
@@ -128,7 +113,8 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
       psychotechnic: {
         startDate: psychoStartDate,
         endDate: psychoEndDate
-      }
+      },
+      ownerType
     };
     
     onSave(newItem);
@@ -167,9 +153,10 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
           <TableHeader>
             <TableRow>
               <TableHead>Adı Soyadı</TableHead>
-              <TableHead>Telefon</TableHead>
               <TableHead>Araç Plakası</TableHead>
+              <TableHead>Telefon</TableHead>
               <TableHead>Araç Yaşı</TableHead>
+              <TableHead>Araç Sahibi / Şoför</TableHead>
               <TableHead>Ruhsat Tarihleri</TableHead>
               <TableHead>Sağlık Raporu</TableHead>
               <TableHead>Koltuk Sigortası</TableHead>
@@ -202,9 +189,10 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
                     }
                   >
                     <TableCell>{item.name}</TableCell>
-                    <TableCell>{item.phone || "-"}</TableCell>
                     <TableCell>{item.licensePlate}</TableCell>
+                    <TableCell>{item.phone || "-"}</TableCell>
                     <TableCell>{item.vehicleAge}</TableCell>
+                    <TableCell>{getOwnerTypeLabel(item.ownerType)}</TableCell>
                     <TableCell>
                       <div className="flex flex-col">
                         <span className="text-xs text-gray-500">Başlangıç:</span>
@@ -263,16 +251,20 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
                       )}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="outline" size="sm" onClick={() => handleEdit(item)}>
-                        Düzenle
-                      </Button>
+                      {renderActionButtons ? (
+                        renderActionButtons(item)
+                      ) : (
+                        <Button variant="outline" size="sm" onClick={() => handleEdit(item)}>
+                          Düzenle
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 );
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={10} className="h-24 text-center">
+                <TableCell colSpan={11} className="h-24 text-center">
                   Kayıt bulunamadı.
                 </TableCell>
               </TableRow>
@@ -299,6 +291,17 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="licensePlate" className="text-right">
+                Araç Plakası
+              </label>
+              <Input
+                id="licensePlate"
+                value={licensePlate}
+                onChange={(e) => setLicensePlate(e.target.value)}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
               <label htmlFor="phone" className="text-right">
                 Telefon
               </label>
@@ -311,15 +314,18 @@ export function DataTable({ data, plateType, onSave }: DataTableProps) {
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="licensePlate" className="text-right">
-                Araç Plakası
+              <label htmlFor="ownerType" className="text-right">
+                Araç Sahibi / Şoför
               </label>
-              <Input
-                id="licensePlate"
-                value={licensePlate}
-                onChange={(e) => setLicensePlate(e.target.value)}
-                className="col-span-3"
-              />
+              <Select value={ownerType} onValueChange={(value) => setOwnerType(value as "owner" | "driver")}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Seçiniz" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="owner">Araç Sahibi</SelectItem>
+                  <SelectItem value="driver">Şoför</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <label htmlFor="vehicleAge" className="text-right">

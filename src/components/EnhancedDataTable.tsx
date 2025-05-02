@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { DataTable, LicenseData } from "@/components/DataTable";
+import { DataTable } from "@/components/DataTable";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { MessageSquare, FileUp, Phone } from "lucide-react";
@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog";
+import { LicenseData } from "@/types/license";
 
 interface EnhancedDataTableProps {
   data: LicenseData[];
@@ -80,7 +81,7 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
           >
             <span>
               <FileUp className="mr-1 h-4 w-4" />
-              {record.licenseDocument ? "Değiştir" : "PDF Yükle"}
+              Düzenle
             </span>
           </Button>
         </label>

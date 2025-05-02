@@ -1,10 +1,12 @@
+
 import { useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
-import { DataTable, LicenseData } from "@/components/DataTable";
+import { DataTable } from "@/components/DataTable";
 import { toast } from "sonner";
 import { addDays } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
+import { LicenseData } from "@/types/license";
 
 const SPlaka = () => {
   const navigate = useNavigate();
@@ -137,6 +139,7 @@ function generateInitialData(): LicenseData[] {
         startDate: new Date(today.getFullYear() - 2, today.getMonth(), today.getDate()),
         endDate: addDays(today, 32),
       },
+      ownerType: "driver",
     },
     {
       id: "3",
@@ -158,6 +161,7 @@ function generateInitialData(): LicenseData[] {
         startDate: new Date(today.getFullYear() - 3, today.getMonth(), today.getDate()),
         endDate: addDays(today, -15),
       },
+      ownerType: "owner",
     },
   ];
 }

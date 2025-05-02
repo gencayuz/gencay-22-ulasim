@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
-import { LicenseData } from "@/components/DataTable";
+import { LicenseData } from "@/types/license";
 import { EnhancedDataTable } from "@/components/EnhancedDataTable";
 import { toast } from "sonner";
 import { addDays } from "date-fns";
@@ -44,11 +44,9 @@ const MPlaka = () => {
           srcCertificate: item.srcCertificate ? {
             startDate: new Date(item.srcCertificate.startDate),
             endDate: new Date(item.srcCertificate.endDate),
-          } : {
-            startDate: new Date(),
-            endDate: addDays(new Date(), 365),
-          },
+          } : undefined,
           licenseDocument: item.licenseDocument || null,
+          ownerType: item.ownerType || "owner",
         }));
       } catch (error) {
         console.error("Error parsing saved data", error);
@@ -128,6 +126,7 @@ function generateInitialData(): LicenseData[] {
         endDate: addDays(today, 60),
       },
       licenseDocument: null,
+      ownerType: "owner",
     },
     {
       id: "2",
@@ -154,6 +153,7 @@ function generateInitialData(): LicenseData[] {
         endDate: addDays(today, 90),
       },
       licenseDocument: null,
+      ownerType: "driver",
     },
     {
       id: "3",
@@ -180,6 +180,7 @@ function generateInitialData(): LicenseData[] {
         endDate: addDays(today, 45),
       },
       licenseDocument: null,
+      ownerType: "owner",
     },
   ];
 }
