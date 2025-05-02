@@ -1,11 +1,13 @@
-
 import { useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
 import { DataTable, LicenseData } from "@/components/DataTable";
 import { toast } from "sonner";
 import { addDays } from "date-fns";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useNavigate } from "react-router-dom";
 
 const SPlaka = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState<LicenseData[]>(() => {
     const savedData = localStorage.getItem("sPlaka");
     if (savedData) {
@@ -38,6 +40,7 @@ const SPlaka = () => {
             endDate: addDays(new Date(), 365),
           },
           phone: item.phone || "",
+          ownerType: item.ownerType || "owner", // Default to owner
         }));
       } catch (error) {
         console.error("Error parsing saved data", error);
@@ -72,6 +75,13 @@ const SPlaka = () => {
 
   return (
     <Layout>
+      <Tabs defaultValue="records" className="w-full mb-6">
+        <TabsList>
+          <TabsTrigger value="home" onClick={() => navigate("/")}>Ana Sayfa</TabsTrigger>
+          <TabsTrigger value="records">S Plaka Kayıtları</TabsTrigger>
+        </TabsList>
+      </Tabs>
+      
       <div className="container mx-auto">
         <h2 className="text-xl font-semibold mb-4">S Plaka Kayıtları</h2>
         <DataTable data={data} plateType="S" onSave={handleSave} />
@@ -105,6 +115,7 @@ function generateInitialData(): LicenseData[] {
         startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
         endDate: addDays(today, 35),
       },
+      ownerType: "owner",
     },
     {
       id: "2",

@@ -9,10 +9,15 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { FileText, ClipboardList, FileCheck, BarChart3, FileBarChart } from "lucide-react";
+import { FileText, ClipboardList, FileCheck, BarChart3, FileBarChart, Home } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const sidebarItems = [
+  {
+    title: "Ana Sayfa",
+    path: "/",
+    icon: Home,
+  },
   {
     title: "M Plaka",
     path: "/m-plaka",
