@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { DataTable } from "@/components/DataTable";
 import { Button } from "@/components/ui/button";
@@ -59,13 +58,13 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
     // Format dates for Excel export
     const formattedData = data.map(item => ({
       "Adı Soyadı": item.name,
+      "Araç Sahibi / Şoför": item.ownerType === "owner" ? "Araç Sahibi" : "Şoför",
       "Araç Plakası": item.licensePlate,
       "Telefon": item.phone || "-",
       "Araç Yaşı": item.vehicleAge,
       "Sabıka Kaydı": item.criminalRecord === "yes" ? "Var" : "Yok",
       "Vergi Levhası": item.taxCertificate === "yes" ? "Var" : "Yok",
       "Oda Kaydı": item.chamberRegistration === "yes" ? "Var" : "Yok",
-      "Araç Sahibi / Şoför": item.ownerType === "owner" ? "Araç Sahibi" : "Şoför",
       "Ruhsat Başlangıç": format(item.startDate, "dd.MM.yyyy"),
       "Ruhsat Bitiş": format(item.endDate, "dd.MM.yyyy"),
       "Sağlık Raporu Başlangıç": item.healthReport ? format(item.healthReport.startDate, "dd.MM.yyyy") : "-",
@@ -105,13 +104,13 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
         <table>
           <tr>
             <th>Adı Soyadı</th>
+            <th>Araç Sahibi / Şoför</th>
             <th>Araç Plakası</th>
             <th>Telefon</th>
             <th>Araç Yaşı</th>
             <th>Sabıka Kaydı</th>
             <th>Vergi Levhası</th>
             <th>Oda Kaydı</th>
-            <th>Araç Sahibi / Şoför</th>
             <th>Ruhsat Tarihleri</th>
             <th>Sağlık Raporu</th>
             <th>Koltuk Sigortası</th>
@@ -124,13 +123,13 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
       html += `
         <tr>
           <td>${item.name}</td>
+          <td>${item.ownerType === "owner" ? "Araç Sahibi" : "Şoför"}</td>
           <td>${item.licensePlate}</td>
           <td>${item.phone || "-"}</td>
           <td>${item.vehicleAge}</td>
           <td>${item.criminalRecord === "yes" ? "Var" : "Yok"}</td>
           <td>${item.taxCertificate === "yes" ? "Var" : "Yok"}</td>
           <td>${item.chamberRegistration === "yes" ? "Var" : "Yok"}</td>
-          <td>${item.ownerType === "owner" ? "Araç Sahibi" : "Şoför"}</td>
           <td>
             Başlangıç: ${format(item.startDate, "dd.MM.yyyy")}<br>
             Bitiş: ${format(item.endDate, "dd.MM.yyyy")}

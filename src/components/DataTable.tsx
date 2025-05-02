@@ -164,13 +164,13 @@ export function DataTable({ data, plateType, onSave, renderActionButtons }: Data
           <TableHeader>
             <TableRow>
               <TableHead>Adı Soyadı</TableHead>
+              <TableHead>Araç Sahibi / Şoför</TableHead>
               <TableHead>Araç Plakası</TableHead>
               <TableHead>Telefon</TableHead>
               <TableHead>Araç Yaşı</TableHead>
               <TableHead>Sabıka Kaydı</TableHead>
               <TableHead>Vergi Levhası</TableHead>
               <TableHead>Oda Kaydı</TableHead>
-              <TableHead>Araç Sahibi / Şoför</TableHead>
               <TableHead>Ruhsat Tarihleri</TableHead>
               <TableHead>Sağlık Raporu</TableHead>
               <TableHead>Koltuk Sigortası</TableHead>
@@ -203,13 +203,13 @@ export function DataTable({ data, plateType, onSave, renderActionButtons }: Data
                     }
                   >
                     <TableCell>{item.name}</TableCell>
+                    <TableCell>{getOwnerTypeLabel(item.ownerType)}</TableCell>
                     <TableCell>{item.licensePlate}</TableCell>
                     <TableCell>{item.phone || "-"}</TableCell>
                     <TableCell>{item.vehicleAge}</TableCell>
                     <TableCell>{item.criminalRecord === "yes" ? "Var" : "Yok"}</TableCell>
                     <TableCell>{item.taxCertificate === "yes" ? "Var" : "Yok"}</TableCell>
                     <TableCell>{item.chamberRegistration === "yes" ? "Var" : "Yok"}</TableCell>
-                    <TableCell>{getOwnerTypeLabel(item.ownerType)}</TableCell>
                     <TableCell>
                       <div className="flex flex-col">
                         <span className="text-xs text-gray-500">Başlangıç:</span>
@@ -307,6 +307,22 @@ export function DataTable({ data, plateType, onSave, renderActionButtons }: Data
                 className="col-span-3"
               />
             </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="ownerType" className="text-right">
+                Araç Sahibi / Şoför
+              </label>
+              <Select value={ownerType} onValueChange={(value) => setOwnerType(value as "owner" | "driver")}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Seçiniz" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="owner">Araç Sahibi</SelectItem>
+                  <SelectItem value="driver">Şoför</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
             <div className="grid grid-cols-4 items-center gap-4">
               <label htmlFor="licensePlate" className="text-right">
                 Araç Plakası
@@ -318,6 +334,7 @@ export function DataTable({ data, plateType, onSave, renderActionButtons }: Data
                 className="col-span-3"
               />
             </div>
+
             <div className="grid grid-cols-4 items-center gap-4">
               <label htmlFor="phone" className="text-right">
                 Telefon
@@ -384,21 +401,6 @@ export function DataTable({ data, plateType, onSave, renderActionButtons }: Data
                 <SelectContent>
                   <SelectItem value="yes">Var</SelectItem>
                   <SelectItem value="no">Yok</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="ownerType" className="text-right">
-                Araç Sahibi / Şoför
-              </label>
-              <Select value={ownerType} onValueChange={(value) => setOwnerType(value as "owner" | "driver")}>
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Seçiniz" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="owner">Araç Sahibi</SelectItem>
-                  <SelectItem value="driver">Şoför</SelectItem>
                 </SelectContent>
               </Select>
             </div>
