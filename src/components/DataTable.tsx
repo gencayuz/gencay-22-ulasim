@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
@@ -35,6 +34,8 @@ export function DataTable({ data, plateType, onSave, renderActionButtons }: Data
   const [endDate, setEndDate] = useState<Date | undefined>(addDays(new Date(), 365));
   const [ownerType, setOwnerType] = useState<"owner" | "driver">("owner");
   const [criminalRecord, setCriminalRecord] = useState<"yes" | "no">("no");
+  const [taxCertificate, setTaxCertificate] = useState<"yes" | "no">("no");
+  const [chamberRegistration, setChamberRegistration] = useState<"yes" | "no">("no");
   
   // State for additional fields
   const [healthStartDate, setHealthStartDate] = useState<Date | undefined>(new Date());
@@ -61,6 +62,8 @@ export function DataTable({ data, plateType, onSave, renderActionButtons }: Data
     setEndDate(addDays(new Date(), 365));
     setOwnerType("owner");
     setCriminalRecord("no");
+    setTaxCertificate("no");
+    setChamberRegistration("no");
     // Reset additional fields
     setHealthStartDate(new Date());
     setHealthEndDate(addDays(new Date(), 365));
@@ -81,6 +84,8 @@ export function DataTable({ data, plateType, onSave, renderActionButtons }: Data
     setEndDate(item.endDate);
     setOwnerType(item.ownerType || "owner");
     setCriminalRecord(item.criminalRecord || "no");
+    setTaxCertificate(item.taxCertificate || "no");
+    setChamberRegistration(item.chamberRegistration || "no");
     
     // Set additional fields if they exist, otherwise use defaults
     setHealthStartDate(item.healthReport?.startDate || new Date());
@@ -118,7 +123,9 @@ export function DataTable({ data, plateType, onSave, renderActionButtons }: Data
         endDate: psychoEndDate
       },
       ownerType,
-      criminalRecord
+      criminalRecord,
+      taxCertificate,
+      chamberRegistration
     };
     
     onSave(newItem);
@@ -161,6 +168,8 @@ export function DataTable({ data, plateType, onSave, renderActionButtons }: Data
               <TableHead>Telefon</TableHead>
               <TableHead>Araç Yaşı</TableHead>
               <TableHead>Sabıka Kaydı</TableHead>
+              <TableHead>Vergi Levhası</TableHead>
+              <TableHead>Oda Kaydı</TableHead>
               <TableHead>Araç Sahibi / Şoför</TableHead>
               <TableHead>Ruhsat Tarihleri</TableHead>
               <TableHead>Sağlık Raporu</TableHead>
@@ -198,6 +207,8 @@ export function DataTable({ data, plateType, onSave, renderActionButtons }: Data
                     <TableCell>{item.phone || "-"}</TableCell>
                     <TableCell>{item.vehicleAge}</TableCell>
                     <TableCell>{item.criminalRecord === "yes" ? "Var" : "Yok"}</TableCell>
+                    <TableCell>{item.taxCertificate === "yes" ? "Var" : "Yok"}</TableCell>
+                    <TableCell>{item.chamberRegistration === "yes" ? "Var" : "Yok"}</TableCell>
                     <TableCell>{getOwnerTypeLabel(item.ownerType)}</TableCell>
                     <TableCell>
                       <div className="flex flex-col">
@@ -270,7 +281,7 @@ export function DataTable({ data, plateType, onSave, renderActionButtons }: Data
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={12} className="h-24 text-center">
+                <TableCell colSpan={14} className="h-24 text-center">
                   Kayıt bulunamadı.
                 </TableCell>
               </TableRow>
@@ -337,6 +348,36 @@ export function DataTable({ data, plateType, onSave, renderActionButtons }: Data
                 Sabıka Kaydı
               </label>
               <Select value={criminalRecord} onValueChange={(value) => setCriminalRecord(value as "yes" | "no")}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Seçiniz" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="yes">Var</SelectItem>
+                  <SelectItem value="no">Yok</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="taxCertificate" className="text-right">
+                Vergi Levhası
+              </label>
+              <Select value={taxCertificate} onValueChange={(value) => setTaxCertificate(value as "yes" | "no")}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Seçiniz" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="yes">Var</SelectItem>
+                  <SelectItem value="no">Yok</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="chamberRegistration" className="text-right">
+                Oda Kaydı
+              </label>
+              <Select value={chamberRegistration} onValueChange={(value) => setChamberRegistration(value as "yes" | "no")}>
                 <SelectTrigger className="col-span-3">
                   <SelectValue placeholder="Seçiniz" />
                 </SelectTrigger>

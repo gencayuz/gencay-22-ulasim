@@ -19,5 +19,7 @@ export interface LicenseData {
   licenseDocument?: string | null;
   ownerType?: "owner" | "driver";
   criminalRecord?: "yes" | "no";
-  type?: string; // Added for reports page to identify plate types
+  type?: string;
+  taxCertificate?: "yes" | "no"; // New field for tax certificate
+  chamberRegistration?: "yes" | "no"; // New field for chamber registration
 }

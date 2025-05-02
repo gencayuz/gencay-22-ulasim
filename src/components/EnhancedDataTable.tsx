@@ -63,6 +63,8 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
       "Telefon": item.phone || "-",
       "Araç Yaşı": item.vehicleAge,
       "Sabıka Kaydı": item.criminalRecord === "yes" ? "Var" : "Yok",
+      "Vergi Levhası": item.taxCertificate === "yes" ? "Var" : "Yok",
+      "Oda Kaydı": item.chamberRegistration === "yes" ? "Var" : "Yok",
       "Araç Sahibi / Şoför": item.ownerType === "owner" ? "Araç Sahibi" : "Şoför",
       "Ruhsat Başlangıç": format(item.startDate, "dd.MM.yyyy"),
       "Ruhsat Bitiş": format(item.endDate, "dd.MM.yyyy"),
@@ -107,6 +109,8 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
             <th>Telefon</th>
             <th>Araç Yaşı</th>
             <th>Sabıka Kaydı</th>
+            <th>Vergi Levhası</th>
+            <th>Oda Kaydı</th>
             <th>Araç Sahibi / Şoför</th>
             <th>Ruhsat Tarihleri</th>
             <th>Sağlık Raporu</th>
@@ -124,6 +128,8 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
           <td>${item.phone || "-"}</td>
           <td>${item.vehicleAge}</td>
           <td>${item.criminalRecord === "yes" ? "Var" : "Yok"}</td>
+          <td>${item.taxCertificate === "yes" ? "Var" : "Yok"}</td>
+          <td>${item.chamberRegistration === "yes" ? "Var" : "Yok"}</td>
           <td>${item.ownerType === "owner" ? "Araç Sahibi" : "Şoför"}</td>
           <td>
             Başlangıç: ${format(item.startDate, "dd.MM.yyyy")}<br>
