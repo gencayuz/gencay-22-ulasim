@@ -18,4 +18,5 @@ export interface LicenseData {
   srcCertificate?: DateRange;
   licenseDocument?: string | null;
   ownerType?: "owner" | "driver";
+  criminalRecord?: "yes" | "no";
 }

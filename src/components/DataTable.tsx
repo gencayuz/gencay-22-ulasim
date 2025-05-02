@@ -34,6 +34,7 @@ export function DataTable({ data, plateType, onSave, renderActionButtons }: Data
   const [startDate, setStartDate] = useState<Date | undefined>(new Date());
   const [endDate, setEndDate] = useState<Date | undefined>(addDays(new Date(), 365));
   const [ownerType, setOwnerType] = useState<"owner" | "driver">("owner");
+  const [criminalRecord, setCriminalRecord] = useState<"yes" | "no">("no");
   
   // State for additional fields
   const [healthStartDate, setHealthStartDate] = useState<Date | undefined>(new Date());
@@ -59,6 +60,7 @@ export function DataTable({ data, plateType, onSave, renderActionButtons }: Data
     setStartDate(new Date());
     setEndDate(addDays(new Date(), 365));
     setOwnerType("owner");
+    setCriminalRecord("no");
     // Reset additional fields
     setHealthStartDate(new Date());
     setHealthEndDate(addDays(new Date(), 365));
@@ -78,6 +80,7 @@ export function DataTable({ data, plateType, onSave, renderActionButtons }: Data
     setStartDate(item.startDate);
     setEndDate(item.endDate);
     setOwnerType(item.ownerType || "owner");
+    setCriminalRecord(item.criminalRecord || "no");
     
     // Set additional fields if they exist, otherwise use defaults
     setHealthStartDate(item.healthReport?.startDate || new Date());
@@ -114,7 +117,8 @@ export function DataTable({ data, plateType, onSave, renderActionButtons }: Data
         startDate: psychoStartDate,
         endDate: psychoEndDate
       },
-      ownerType
+      ownerType,
+      criminalRecord
     };
     
     onSave(newItem);
@@ -156,6 +160,7 @@ export function DataTable({ data, plateType, onSave, renderActionButtons }: Data
               <TableHead>Araç Plakası</TableHead>
               <TableHead>Telefon</TableHead>
               <TableHead>Araç Yaşı</TableHead>
+              <TableHead>Sabıka Kaydı</TableHead>
               <TableHead>Araç Sahibi / Şoför</TableHead>
               <TableHead>Ruhsat Tarihleri</TableHead>
               <TableHead>Sağlık Raporu</TableHead>
@@ -192,6 +197,7 @@ export function DataTable({ data, plateType, onSave, renderActionButtons }: Data
                     <TableCell>{item.licensePlate}</TableCell>
                     <TableCell>{item.phone || "-"}</TableCell>
                     <TableCell>{item.vehicleAge}</TableCell>
+                    <TableCell>{item.criminalRecord === "yes" ? "Var" : "Yok"}</TableCell>
                     <TableCell>{getOwnerTypeLabel(item.ownerType)}</TableCell>
                     <TableCell>
                       <div className="flex flex-col">
@@ -264,7 +270,7 @@ export function DataTable({ data, plateType, onSave, renderActionButtons }: Data
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={11} className="h-24 text-center">
+                <TableCell colSpan={12} className="h-24 text-center">
                   Kayıt bulunamadı.
                 </TableCell>
               </TableRow>
@@ -314,6 +320,34 @@ export function DataTable({ data, plateType, onSave, renderActionButtons }: Data
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="vehicleAge" className="text-right">
+                Araç Yaşı
+              </label>
+              <Input
+                id="vehicleAge"
+                type="number"
+                value={vehicleAge}
+                onChange={(e) => setVehicleAge(parseInt(e.target.value))}
+                className="col-span-3"
+              />
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="criminalRecord" className="text-right">
+                Sabıka Kaydı
+              </label>
+              <Select value={criminalRecord} onValueChange={(value) => setCriminalRecord(value as "yes" | "no")}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Seçiniz" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="yes">Var</SelectItem>
+                  <SelectItem value="no">Yok</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
               <label htmlFor="ownerType" className="text-right">
                 Araç Sahibi / Şoför
               </label>
@@ -326,18 +360,6 @@ export function DataTable({ data, plateType, onSave, renderActionButtons }: Data
                   <SelectItem value="driver">Şoför</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="vehicleAge" className="text-right">
-                Araç Yaşı
-              </label>
-              <Input
-                id="vehicleAge"
-                type="number"
-                value={vehicleAge}
-                onChange={(e) => setVehicleAge(parseInt(e.target.value))}
-                className="col-span-3"
-              />
             </div>
             
             {/* Ruhsat tarihleri */}
