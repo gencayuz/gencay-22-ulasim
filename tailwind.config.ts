@@ -61,6 +61,12 @@ export default {
 					DEFAULT: '#ea384c',
 					foreground: '#FFFFFF'
 				},
+				kesan: {
+					DEFAULT: '#0287c3', // main sea blue
+					light: '#00b4d8', // turquoise tone
+					dark: '#023e7d', // dark blue
+					foreground: '#ffffff'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -93,11 +99,22 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'fade-in': {
+					from: { opacity: '0' },
+					to: { opacity: '1' }
+				},
+				'theme-switch': {
+					'0%': { transform: 'scale(1)' },
+					'50%': { transform: 'scale(1.05)' },
+					'100%': { transform: 'scale(1)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.3s ease-out',
+				'theme-switch': 'theme-switch 0.5s ease-in-out'
 			}
 		}
 	},

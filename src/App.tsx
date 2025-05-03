@@ -35,6 +35,16 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Apply the saved theme when the app first loads
+    const initTheme = () => {
+      const storedTheme = localStorage.getItem("theme") || 
+        (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        
+      document.documentElement.classList.toggle("dark", storedTheme === "dark");
+    };
+    
+    initTheme();
+    
     // Check if user is logged in
     const checkAuth = () => {
       setTimeout(() => {
@@ -47,8 +57,11 @@ const App = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Yükleniyor...</p>
+      <div className="min-h-screen flex items-center justify-center theme-transition bg-background text-foreground">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-primary mb-2">Keşan Belediyesi</h2>
+          <p className="text-muted-foreground">Yükleniyor...</p>
+        </div>
       </div>
     );
   }

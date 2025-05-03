@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -33,16 +34,26 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex flex-col items-center justify-center theme-transition bg-background">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
+      
       <div className="w-full max-w-md px-4">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold mb-2">Keşan Belediyesi</h1>
-          <h2 className="text-xl">Ulaşım Hizmetleri</h2>
+          <div className="mb-6">
+            {/* You can add a logo here */}
+            <div className="w-24 h-24 mx-auto bg-primary rounded-full flex items-center justify-center">
+              <span className="text-white text-2xl font-bold">KB</span>
+            </div>
+          </div>
+          <h1 className="text-2xl font-bold mb-2 text-primary">Keşan Belediyesi</h1>
+          <h2 className="text-xl text-foreground">Ulaşım Hizmetleri</h2>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Giriş Yap</CardTitle>
+        <Card className="border border-border shadow-lg theme-transition">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-xl">Giriş Yap</CardTitle>
             <CardDescription>
               Sisteme giriş yapmak için bilgilerinizi giriniz
             </CardDescription>
@@ -58,6 +69,7 @@ const Login = () => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Kullanıcı adınızı giriniz"
+                  className="border-input"
                 />
               </div>
               <div className="space-y-2">
@@ -70,11 +82,16 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Şifrenizi giriniz"
+                  className="border-input"
                 />
               </div>
             </CardContent>
             <CardFooter>
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button 
+                type="submit" 
+                className="w-full bg-primary hover:bg-primary/90 text-white" 
+                disabled={loading}
+              >
                 {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
               </Button>
             </CardFooter>
