@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { FileUp, Phone } from "lucide-react";
+import { FileUp, Phone, Pencil } from "lucide-react";
 import { LicenseData } from "@/types/license";
 import { toast } from "sonner";
 
@@ -8,12 +8,14 @@ interface RecordActionButtonsProps {
   record: LicenseData;
   onSendSMS: (record: LicenseData) => void;
   onSave: (data: LicenseData) => void;
+  onEdit: (item: LicenseData) => void;
 }
 
 export const RecordActionButtons = ({ 
   record, 
   onSendSMS,
-  onSave
+  onSave,
+  onEdit
 }: RecordActionButtonsProps) => {
   
   const handleUploadPdf = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,6 +45,16 @@ export const RecordActionButtons = ({
         SMS
       </Button>
       
+      <Button 
+        variant="outline" 
+        size="sm"
+        onClick={() => onEdit(record)}
+        className="flex items-center"
+      >
+        <Pencil className="mr-1 h-4 w-4" />
+        Düzenle
+      </Button>
+      
       <label className="cursor-pointer">
         <input
           type="file"
@@ -58,7 +70,7 @@ export const RecordActionButtons = ({
         >
           <span>
             <FileUp className="mr-1 h-4 w-4" />
-            Düzenle
+            Yükle
           </span>
         </Button>
       </label>

@@ -14,25 +14,41 @@ export interface DataTableProps {
   plateType: string;
   onSave: (data: LicenseData) => void;
   renderActionButtons?: (record: LicenseData) => React.ReactNode;
+  isDialogOpen?: boolean;
+  setIsDialogOpen?: (open: boolean) => void;
+  editRecord?: LicenseData | null;
 }
 
-export function DataTable({ data, plateType, onSave, renderActionButtons }: DataTableProps) {
+export function DataTable({ 
+  data, 
+  plateType, 
+  onSave, 
+  renderActionButtons,
+  isDialogOpen,
+  setIsDialogOpen,
+  editRecord
+}: DataTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   
   // Dialog state for adding/editing entries
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [localDialogOpen, setLocalDialogOpen] = useState(false);
   const [currentItem, setCurrentItem] = useState<LicenseData | null>(null);
+  
+  // Use external dialog state if provided, otherwise use local state
+  const dialogOpen = isDialogOpen !== undefined ? isDialogOpen : localDialogOpen;
+  const setDialogOpen = setIsDialogOpen || setLocalDialogOpen;
+  const currentRecord = editRecord || currentItem;
   
   const filteredData = filterLicenseData(data, searchTerm);
 
   const handleAddNew = () => {
     setCurrentItem(null);
-    setIsDialogOpen(true);
+    setDialogOpen(true);
   };
 
   const handleEdit = (item: LicenseData) => {
     setCurrentItem(item);
-    setIsDialogOpen(true);
+    setDialogOpen(true);
   };
 
   return (
@@ -92,9 +108,9 @@ export function DataTable({ data, plateType, onSave, renderActionButtons }: Data
       </div>
 
       <LicenseFormDialog 
-        open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-        currentItem={currentItem}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        currentItem={currentRecord}
         onSave={onSave}
       />
     </div>

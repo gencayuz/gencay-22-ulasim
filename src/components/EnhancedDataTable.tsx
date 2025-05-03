@@ -17,6 +17,8 @@ interface EnhancedDataTableProps {
 export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTableProps) => {
   const [smsDialogOpen, setSmsDialogOpen] = useState(false);
   const [currentRecord, setCurrentRecord] = useState<LicenseData | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editRecord, setEditRecord] = useState<LicenseData | null>(null);
 
   // Sort data by ownerType, owners first, then drivers
   const sortedData = [...data].sort((a, b) => {
@@ -29,6 +31,11 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
     setCurrentRecord(record);
     setSmsDialogOpen(true);
   };
+  
+  const handleEdit = (record: LicenseData) => {
+    setEditRecord(record);
+    setIsDialogOpen(true);
+  };
 
   const renderActionButtons = (record: LicenseData) => {
     return (
@@ -36,6 +43,7 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
         record={record} 
         onSendSMS={handleSendSMS} 
         onSave={onSave}
+        onEdit={handleEdit}
       />
     );
   };
@@ -66,6 +74,9 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
         plateType={plateType} 
         onSave={onSave}
         renderActionButtons={renderActionButtons}
+        isDialogOpen={isDialogOpen}
+        setIsDialogOpen={setIsDialogOpen}
+        editRecord={editRecord}
       />
       
       <SMSDialog 

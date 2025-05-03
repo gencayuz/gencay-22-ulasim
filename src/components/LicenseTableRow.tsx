@@ -6,6 +6,7 @@ import { StatusIndicator } from "./StatusIndicator";
 import { DateRangeCell } from "./DateRangeCell";
 import { Button } from "./ui/button";
 import { getOwnerTypeLabel } from "@/utils/ownerTypeUtils";
+import { Pencil } from "lucide-react";
 
 interface LicenseTableRowProps {
   item: LicenseData;
@@ -89,6 +90,7 @@ export const LicenseTableRow = ({ item, onEdit, renderActionButtons }: LicenseTa
           renderActionButtons(item)
         ) : (
           <Button variant="outline" size="sm" onClick={() => onEdit(item)}>
+            <Pencil className="h-4 w-4 mr-1" />
             Düzenle
           </Button>
         )}
