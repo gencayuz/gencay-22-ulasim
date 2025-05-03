@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
-import { DataTable } from "@/components/DataTable";
+import { EnhancedDataTable } from "@/components/EnhancedDataTable";
 import { toast } from "sonner";
 import { addDays } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -43,6 +42,9 @@ const D4SPlaka = () => {
           },
           phone: item.phone || "",
           ownerType: item.ownerType || "owner", // Default to owner
+          criminalRecord: item.criminalRecord || "no",
+          taxCertificate: item.taxCertificate || "no",
+          chamberRegistration: item.chamberRegistration || "no",
         }));
       } catch (error) {
         console.error("Error parsing saved data", error);
@@ -86,7 +88,7 @@ const D4SPlaka = () => {
       
       <div className="container mx-auto">
         <h2 className="text-xl font-semibold mb-4">D4S Plaka Kayıtları</h2>
-        <DataTable data={data} plateType="D4S" onSave={handleSave} />
+        <EnhancedDataTable data={data} plateType="D4S" onSave={handleSave} />
       </div>
     </Layout>
   );

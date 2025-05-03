@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { DataTable } from "@/components/DataTable";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,13 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
   const [smsDialogOpen, setSmsDialogOpen] = useState(false);
   const [currentRecord, setCurrentRecord] = useState<LicenseData | null>(null);
   const [smsMessage, setSmsMessage] = useState("");
+
+  // Sort data by ownerType, owners first, then drivers
+  const sortedData = [...data].sort((a, b) => {
+    if (a.ownerType === "owner" && b.ownerType === "driver") return -1;
+    if (a.ownerType === "driver" && b.ownerType === "owner") return 1;
+    return 0;
+  });
 
   const handleSendSMS = (record: LicenseData) => {
     setCurrentRecord(record);
@@ -56,7 +64,7 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
 
   const exportToExcel = () => {
     // Format dates for Excel export
-    const formattedData = data.map(item => ({
+    const formattedData = sortedData.map(item => ({
       "Adı Soyadı": item.name,
       "Araç Sahibi / Şoför": item.ownerType === "owner" ? "Araç Sahibi" : "Şoför",
       "Araç Plakası": item.licensePlate,
@@ -119,7 +127,7 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
     `;
 
     // Add data rows
-    data.forEach(item => {
+    sortedData.forEach(item => {
       html += `
         <tr>
           <td>${item.name}</td>
@@ -229,7 +237,7 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
       </div>
 
       <DataTable 
-        data={data} 
+        data={sortedData} 
         plateType={plateType} 
         onSave={onSave}
       />
