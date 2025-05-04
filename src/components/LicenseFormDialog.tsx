@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -21,13 +20,15 @@ interface LicenseFormDialogProps {
   onOpenChange: (open: boolean) => void;
   currentItem: LicenseData | null;
   onSave: (data: LicenseData) => void;
+  plateType: string; // Added plateType prop
 }
 
 export const LicenseFormDialog = ({ 
   open, 
   onOpenChange, 
   currentItem, 
-  onSave 
+  onSave,
+  plateType 
 }: LicenseFormDialogProps) => {
   const location = useLocation();
   
@@ -40,7 +41,8 @@ export const LicenseFormDialog = ({
     return "M"; // Default
   };
 
-  const plateType = getCurrentPlateType();
+  // Use the passed plateType prop instead of determining it from the route
+  // const plateType = getCurrentPlateType();
   
   // Basic form state
   const [name, setName] = useState("");
