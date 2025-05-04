@@ -25,13 +25,13 @@ export const DateRangeFields = ({
         <DatePickerField
           label="Başlangıç"
           date={startDate}
-          onDateChange={onStartDateChange}
+          onSelect={onStartDateChange}
           className={hasErrors ? 'border-red-500' : ''}
         />
         <DatePickerField
           label="Bitiş"
           date={endDate}
-          onDateChange={onEndDateChange}
+          onSelect={onEndDateChange}
           className={hasErrors ? 'border-red-500' : ''}
         />
       </div>

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
 import { EnhancedDataTable } from "@/components/EnhancedDataTable";
@@ -120,6 +121,7 @@ function generateInitialData(): LicenseData[] {
         endDate: addDays(today, 150),
       },
       ownerType: "owner",
+      active: true, // Add missing active property
     },
   ];
 }

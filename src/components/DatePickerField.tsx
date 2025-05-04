@@ -11,9 +11,10 @@ interface DatePickerFieldProps {
   label: string;
   date?: Date;
   onSelect: (date?: Date) => void;
+  className?: string;
 }
 
-export const DatePickerField = ({ label, date, onSelect }: DatePickerFieldProps) => {
+export const DatePickerField = ({ label, date, onSelect, className }: DatePickerFieldProps) => {
   return (
     <div>
       <label className="text-sm text-muted-foreground">
@@ -23,7 +24,7 @@ export const DatePickerField = ({ label, date, onSelect }: DatePickerFieldProps)
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className="w-full justify-start text-left font-normal mt-1"
+            className={cn("w-full justify-start text-left font-normal mt-1", className)}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {date ? format(date, "dd.MM.yyyy") : "Tarih seçin"}

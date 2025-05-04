@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
 import { EnhancedDataTable } from "@/components/EnhancedDataTable";
@@ -120,6 +121,7 @@ function generateInitialData(): LicenseData[] {
         endDate: addDays(today, 180),
       },
       ownerType: "owner",
+      active: true, // Add missing active property
     },
     {
       id: "2",
@@ -142,6 +144,7 @@ function generateInitialData(): LicenseData[] {
         endDate: addDays(today, 90),
       },
       ownerType: "driver",
+      active: true, // Add missing active property
     },
     {
       id: "3",
@@ -164,6 +167,7 @@ function generateInitialData(): LicenseData[] {
         endDate: addDays(today, -10),
       },
       ownerType: "owner",
+      active: true, // Add missing active property
     },
   ];
 }
