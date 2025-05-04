@@ -1,4 +1,3 @@
-
 import { Layout } from "@/components/Layout";
 import { useEffect, useState } from "react";
 import { addDays, format, isAfter, isBefore } from "date-fns";
@@ -464,56 +463,114 @@ const Raporlar = () => {
           </div>
         </div>
         
+        {/* Main Tabs component that wraps all TabsContent */}
         <Tabs value={reportTab} onValueChange={setReportTab} className="w-full mb-6">
           <TabsList className="w-full justify-start">
             <TabsTrigger value="summary">Genel Özet</TabsTrigger>
             <TabsTrigger value="owner-driver">Araç Sahibi/Şoför</TabsTrigger>
             <TabsTrigger value="sms">SMS Geçmişi</TabsTrigger>
           </TabsList>
-        </Tabs>
-        
-        <TabsContent value="summary">
-          <div id="report-container">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              <Card className="card-stats">
-                <CardContent className="pt-6">
-                  <div className="text-3xl font-bold">{stats.licenses}</div>
-                  <CardTitle className="text-lg">Plakalar</CardTitle>
-                  <p className="text-gray-500 text-sm">Süresi dolacak</p>
-                </CardContent>
-              </Card>
-              <Card className="card-stats">
-                <CardContent className="pt-6">
-                  <div className="text-3xl font-bold">{stats.health}</div>
-                  <CardTitle className="text-lg">Sağlık Raporları</CardTitle>
-                  <p className="text-gray-500 text-sm">Süresi dolacak</p>
-                </CardContent>
-              </Card>
-              <Card className="card-stats">
-                <CardContent className="pt-6">
-                  <div className="text-3xl font-bold">{stats.seat}</div>
-                  <CardTitle className="text-lg">Koltuk Sigortaları</CardTitle>
-                  <p className="text-gray-500 text-sm">Süresi dolacak</p>
-                </CardContent>
-              </Card>
-              <Card className="card-stats">
-                <CardContent className="pt-6">
-                  <div className="text-3xl font-bold">{stats.psycho}</div>
-                  <CardTitle className="text-lg">Psikoteknik</CardTitle>
-                  <p className="text-gray-500 text-sm">Süresi dolacak</p>
-                </CardContent>
-              </Card>
+          
+          {/* Summary tab content */}
+          <TabsContent value="summary">
+            <div id="report-container">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <Card className="card-stats">
+                  <CardContent className="pt-6">
+                    <div className="text-3xl font-bold">{stats.licenses}</div>
+                    <CardTitle className="text-lg">Plakalar</CardTitle>
+                    <p className="text-gray-500 text-sm">Süresi dolacak</p>
+                  </CardContent>
+                </Card>
+                <Card className="card-stats">
+                  <CardContent className="pt-6">
+                    <div className="text-3xl font-bold">{stats.health}</div>
+                    <CardTitle className="text-lg">Sağlık Raporları</CardTitle>
+                    <p className="text-gray-500 text-sm">Süresi dolacak</p>
+                  </CardContent>
+                </Card>
+                <Card className="card-stats">
+                  <CardContent className="pt-6">
+                    <div className="text-3xl font-bold">{stats.seat}</div>
+                    <CardTitle className="text-lg">Koltuk Sigortaları</CardTitle>
+                    <p className="text-gray-500 text-sm">Süresi dolacak</p>
+                  </CardContent>
+                </Card>
+                <Card className="card-stats">
+                  <CardContent className="pt-6">
+                    <div className="text-3xl font-bold">{stats.psycho}</div>
+                    <CardTitle className="text-lg">Psikoteknik</CardTitle>
+                    <p className="text-gray-500 text-sm">Süresi dolacak</p>
+                  </CardContent>
+                </Card>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <Card>
+                  <CardContent className="pt-6">
+                    <CardTitle className="mb-4">Araç Tipi Dağılımı</CardTitle>
+                    <div className="chart-container">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <ReChartsPieChart>
+                          <Pie
+                            data={vehicleDistribution}
+                            cx="50%"
+                            cy="50%"
+                            labelLine={false}
+                            label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                            outerRadius={80}
+                            fill="#8884d8"
+                            dataKey="value"
+                          >
+                            {vehicleDistribution.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                          </Pie>
+                          <Tooltip />
+                          <Legend />
+                        </ReChartsPieChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-6">
+                    <CardTitle className="mb-4">Aylara Göre Süreleri Dolacak Belgeler</CardTitle>
+                    <div className="chart-container">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart
+                          data={nextMonths}
+                          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                        >
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="month" />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend />
+                          <Line type="monotone" dataKey="licenses" stroke="#8884d8" name="Ruhsat" />
+                          <Line type="monotone" dataKey="health" stroke="#82ca9d" name="Sağlık" />
+                          <Line type="monotone" dataKey="seat" stroke="#ff7300" name="Koltuk" />
+                          <Line type="monotone" dataKey="psycho" stroke="#0088FE" name="Psikoteknik" />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-            
+          </TabsContent>
+          
+          {/* Owner/Driver tab content */}
+          <TabsContent value="owner-driver">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <Card>
                 <CardContent className="pt-6">
-                  <CardTitle className="mb-4">Araç Tipi Dağılımı</CardTitle>
+                  <CardTitle className="mb-4">Araç Sahibi/Şoför Dağılımı</CardTitle>
                   <div className="chart-container">
                     <ResponsiveContainer width="100%" height="100%">
                       <ReChartsPieChart>
                         <Pie
-                          data={vehicleDistribution}
+                          data={ownerVsDriverStats}
                           cx="50%"
                           cy="50%"
                           labelLine={false}
@@ -522,9 +579,8 @@ const Raporlar = () => {
                           fill="#8884d8"
                           dataKey="value"
                         >
-                          {vehicleDistribution.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
+                          <Cell fill="#0088FE" />
+                          <Cell fill="#00C49F" />
                         </Pie>
                         <Tooltip />
                         <Legend />
@@ -535,140 +591,87 @@ const Raporlar = () => {
               </Card>
               <Card>
                 <CardContent className="pt-6">
-                  <CardTitle className="mb-4">Aylara Göre Süreleri Dolacak Belgeler</CardTitle>
+                  <CardTitle className="mb-4">Araç Sahibi/Şoför Belge Süresi Karşılaştırması</CardTitle>
                   <div className="chart-container">
                     <ResponsiveContainer width="100%" height="100%">
-                      <LineChart
-                        data={nextMonths}
+                      <BarChart
+                        data={ownerDriverComparisonData}
                         margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                       >
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="month" />
+                        <XAxis dataKey="name" />
                         <YAxis />
                         <Tooltip />
                         <Legend />
-                        <Line type="monotone" dataKey="licenses" stroke="#8884d8" name="Ruhsat" />
-                        <Line type="monotone" dataKey="health" stroke="#82ca9d" name="Sağlık" />
-                        <Line type="monotone" dataKey="seat" stroke="#ff7300" name="Koltuk" />
-                        <Line type="monotone" dataKey="psycho" stroke="#0088FE" name="Psikoteknik" />
-                      </LineChart>
+                        <Bar dataKey="Araç Sahipleri" fill="#0088FE" />
+                        <Bar dataKey="Şoförler" fill="#00C49F" />
+                      </BarChart>
                     </ResponsiveContainer>
                   </div>
                 </CardContent>
               </Card>
             </div>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="owner-driver">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <Card>
-              <CardContent className="pt-6">
-                <CardTitle className="mb-4">Araç Sahibi/Şoför Dağılımı</CardTitle>
-                <div className="chart-container">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <ReChartsPieChart>
-                      <Pie
-                        data={ownerVsDriverStats}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        <Cell fill="#0088FE" />
-                        <Cell fill="#00C49F" />
-                      </Pie>
-                      <Tooltip />
-                      <Legend />
-                    </ReChartsPieChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <CardTitle className="mb-4">Araç Sahibi/Şoför Belge Süresi Karşılaştırması</CardTitle>
-                <div className="chart-container">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={ownerDriverComparisonData}
-                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Bar dataKey="Araç Sahipleri" fill="#0088FE" />
-                      <Bar dataKey="Şoförler" fill="#00C49F" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Card>
+                <CardContent className="pt-6">
+                  <CardTitle className="mb-4">Araç Sahipleri - Süresi Dolacak Belgeler</CardTitle>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-4 bg-background/50 rounded-lg">
+                      <div className="text-3xl font-bold">{ownerExpiryData.licenses}</div>
+                      <p>Ruhsat</p>
+                    </div>
+                    <div className="text-center p-4 bg-background/50 rounded-lg">
+                      <div className="text-3xl font-bold">{ownerExpiryData.health}</div>
+                      <p>Sağlık Raporu</p>
+                    </div>
+                    <div className="text-center p-4 bg-background/50 rounded-lg">
+                      <div className="text-3xl font-bold">{ownerExpiryData.seat}</div>
+                      <p>Koltuk Sigortası</p>
+                    </div>
+                    <div className="text-center p-4 bg-background/50 rounded-lg">
+                      <div className="text-3xl font-bold">{ownerExpiryData.psycho}</div>
+                      <p>Psikoteknik</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <CardTitle className="mb-4">Şoförler - Süresi Dolacak Belgeler</CardTitle>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-4 bg-background/50 rounded-lg">
+                      <div className="text-3xl font-bold">{driverExpiryData.licenses}</div>
+                      <p>Ruhsat</p>
+                    </div>
+                    <div className="text-center p-4 bg-background/50 rounded-lg">
+                      <div className="text-3xl font-bold">{driverExpiryData.health}</div>
+                      <p>Sağlık Raporu</p>
+                    </div>
+                    <div className="text-center p-4 bg-background/50 rounded-lg">
+                      <div className="text-3xl font-bold">{driverExpiryData.seat}</div>
+                      <p>Koltuk Sigortası</p>
+                    </div>
+                    <div className="text-center p-4 bg-background/50 rounded-lg">
+                      <div className="text-3xl font-bold">{driverExpiryData.psycho}</div>
+                      <p>Psikoteknik</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* SMS History tab content */}
+          <TabsContent value="sms">
             <Card>
               <CardContent className="pt-6">
-                <CardTitle className="mb-4">Araç Sahipleri - Süresi Dolacak Belgeler</CardTitle>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-4 bg-background/50 rounded-lg">
-                    <div className="text-3xl font-bold">{ownerExpiryData.licenses}</div>
-                    <p>Ruhsat</p>
-                  </div>
-                  <div className="text-center p-4 bg-background/50 rounded-lg">
-                    <div className="text-3xl font-bold">{ownerExpiryData.health}</div>
-                    <p>Sağlık Raporu</p>
-                  </div>
-                  <div className="text-center p-4 bg-background/50 rounded-lg">
-                    <div className="text-3xl font-bold">{ownerExpiryData.seat}</div>
-                    <p>Koltuk Sigortası</p>
-                  </div>
-                  <div className="text-center p-4 bg-background/50 rounded-lg">
-                    <div className="text-3xl font-bold">{ownerExpiryData.psycho}</div>
-                    <p>Psikoteknik</p>
-                  </div>
-                </div>
+                <CardTitle className="mb-4">SMS Geçmişi</CardTitle>
+                <SMSHistoryTable />
               </CardContent>
             </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <CardTitle className="mb-4">Şoförler - Süresi Dolacak Belgeler</CardTitle>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-4 bg-background/50 rounded-lg">
-                    <div className="text-3xl font-bold">{driverExpiryData.licenses}</div>
-                    <p>Ruhsat</p>
-                  </div>
-                  <div className="text-center p-4 bg-background/50 rounded-lg">
-                    <div className="text-3xl font-bold">{driverExpiryData.health}</div>
-                    <p>Sağlık Raporu</p>
-                  </div>
-                  <div className="text-center p-4 bg-background/50 rounded-lg">
-                    <div className="text-3xl font-bold">{driverExpiryData.seat}</div>
-                    <p>Koltuk Sigortası</p>
-                  </div>
-                  <div className="text-center p-4 bg-background/50 rounded-lg">
-                    <div className="text-3xl font-bold">{driverExpiryData.psycho}</div>
-                    <p>Psikoteknik</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="sms">
-          <Card>
-            <CardContent className="pt-6">
-              <CardTitle className="mb-4">SMS Geçmişi</CardTitle>
-              <SMSHistoryTable />
-            </CardContent>
-          </Card>
-        </TabsContent>
+          </TabsContent>
+        </Tabs>
       </div>
     </Layout>
   );
