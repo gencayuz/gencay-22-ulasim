@@ -22,4 +22,5 @@ export interface LicenseData {
   type?: string;
   taxCertificate?: "yes" | "no"; // New field for tax certificate
   chamberRegistration?: "yes" | "no"; // New field for chamber registration
+  active: boolean; // New field for active status
 }

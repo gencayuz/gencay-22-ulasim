@@ -46,6 +46,7 @@ const SPlaka = () => {
           criminalRecord: item.criminalRecord || "no",
           taxCertificate: item.taxCertificate || "no",
           chamberRegistration: item.chamberRegistration || "no",
+          active: item.active !== undefined ? item.active : true, // Set default active status
         }));
       } catch (error) {
         console.error("Error parsing saved data", error);
@@ -124,6 +125,7 @@ function generateInitialData(): LicenseData[] {
       criminalRecord: "no",
       taxCertificate: "yes",
       chamberRegistration: "yes",
+      active: true,
     },
     {
       id: "2",
@@ -149,6 +151,7 @@ function generateInitialData(): LicenseData[] {
       criminalRecord: "yes",
       taxCertificate: "no",
       chamberRegistration: "yes",
+      active: true,
     },
     {
       id: "3",
@@ -174,6 +177,7 @@ function generateInitialData(): LicenseData[] {
       criminalRecord: "no",
       taxCertificate: "yes",
       chamberRegistration: "no",
+      active: true,
     },
   ];
 }

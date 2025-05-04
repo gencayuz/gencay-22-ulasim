@@ -7,6 +7,7 @@ import { DateRangeCell } from "./DateRangeCell";
 import { Button } from "./ui/button";
 import { getOwnerTypeLabel } from "@/utils/ownerTypeUtils";
 import { Pencil } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface LicenseTableRowProps {
   item: LicenseData;
@@ -16,6 +17,11 @@ interface LicenseTableRowProps {
 
 export const LicenseTableRow = ({ item, onEdit, renderActionButtons }: LicenseTableRowProps) => {
   const getRowStatus = (endDate: Date) => {
+    // If record is inactive, return normal status regardless of dates
+    if (item.active === false) {
+      return "normal";
+    }
+    
     const today = new Date();
     const daysUntilExpiry = differenceInDays(endDate, today);
     
@@ -43,12 +49,22 @@ export const LicenseTableRow = ({ item, onEdit, renderActionButtons }: LicenseTa
     <TableRow 
       key={item.id} 
       className={
+        item.active === false ? "" :
         worstStatus === "danger" ? "bg-danger/10" : 
         worstStatus === "warning" ? "bg-warning/30" : ""
       }
     >
       <TableCell>{item.name}</TableCell>
-      <TableCell>{getOwnerTypeLabel(item.ownerType)}</TableCell>
+      <TableCell>
+        <div className="flex items-center gap-2">
+          {getOwnerTypeLabel(item.ownerType)}
+          {item.active === false && (
+            <Badge variant="outline" className="text-xs bg-gray-100">
+              Pasif
+            </Badge>
+          )}
+        </div>
+      </TableCell>
       <TableCell>{item.licensePlate}</TableCell>
       <TableCell>{item.phone || "-"}</TableCell>
       <TableCell>{item.vehicleAge}</TableCell>
@@ -83,7 +99,7 @@ export const LicenseTableRow = ({ item, onEdit, renderActionButtons }: LicenseTa
         />
       </TableCell>
       <TableCell>
-        <StatusIndicator status={worstStatus} />
+        <StatusIndicator status={item.active === false ? "normal" : worstStatus} />
       </TableCell>
       <TableCell className="text-right">
         {renderActionButtons ? (

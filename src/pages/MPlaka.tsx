@@ -47,6 +47,7 @@ const MPlaka = () => {
           } : undefined,
           licenseDocument: item.licenseDocument || null,
           ownerType: item.ownerType || "owner",
+          active: item.active !== undefined ? item.active : true, // Set default active status
         }));
       } catch (error) {
         console.error("Error parsing saved data", error);
@@ -127,6 +128,7 @@ function generateInitialData(): LicenseData[] {
       },
       licenseDocument: null,
       ownerType: "owner",
+      active: true,
     },
     {
       id: "2",
@@ -154,6 +156,7 @@ function generateInitialData(): LicenseData[] {
       },
       licenseDocument: null,
       ownerType: "driver",
+      active: true,
     },
     {
       id: "3",
@@ -181,6 +184,7 @@ function generateInitialData(): LicenseData[] {
       },
       licenseDocument: null,
       ownerType: "owner",
+      active: true,
     },
   ];
 }
