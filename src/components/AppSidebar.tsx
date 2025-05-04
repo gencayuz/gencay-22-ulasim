@@ -9,7 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { FileText, ClipboardList, FileCheck, BarChart3, FileBarChart, Home } from "lucide-react";
+import { FileText, ClipboardList, FileCheck, BarChart3, FileBarChart, Home, Archive } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const sidebarItems = [
@@ -42,6 +42,11 @@ const sidebarItems = [
     title: "D4S Plaka",
     path: "/d4s-plaka",
     icon: FileBarChart,
+  },
+  {
+    title: "Arşiv",
+    path: "/arsiv",
+    icon: Archive,
   },
   {
     title: "Raporlar",

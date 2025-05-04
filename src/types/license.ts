@@ -13,14 +13,16 @@ export interface LicenseData {
   startDate: Date;
   endDate: Date;
   healthReport: DateRange;
-  seatInsurance: DateRange;
+  seatInsurance?: DateRange; // Make optional
   psychotechnic: DateRange;
   srcCertificate?: DateRange;
   licenseDocument?: string | null;
   ownerType?: "owner" | "driver";
   criminalRecord?: "yes" | "no";
   type?: string;
-  taxCertificate?: "yes" | "no"; // New field for tax certificate
-  chamberRegistration?: "yes" | "no"; // New field for chamber registration
-  active: boolean; // New field for active status
+  taxCertificate?: "yes" | "no"; 
+  chamberRegistration?: "yes" | "no"; 
+  sgkServiceList?: "yes" | "no"; // Added SGK Hizmet Listesi field
+  penaltyPoints?: "yes" | "no"; // Added Ceza Puan Durumu field
+  active: boolean;
 }

@@ -77,10 +77,12 @@ export function DataTable({
               <TableHead>Araç Yaşı</TableHead>
               <TableHead>Sabıka Kaydı</TableHead>
               <TableHead>Vergi Levhası</TableHead>
+              <TableHead>Ceza Puan Durumu</TableHead>
               <TableHead>Oda Kaydı</TableHead>
+              <TableHead>SGK Hizmet Listesi</TableHead>
               <TableHead>Ruhsat Tarihleri</TableHead>
               <TableHead>Sağlık Raporu</TableHead>
-              <TableHead>Koltuk Sigortası</TableHead>
+              {plateType !== "J" && <TableHead>Koltuk Sigortası</TableHead>}
               <TableHead>Psikoteknik</TableHead>
               <TableHead>Durum</TableHead>
               <TableHead className="text-right">İşlemler</TableHead>
@@ -94,11 +96,12 @@ export function DataTable({
                   item={item} 
                   onEdit={handleEdit} 
                   renderActionButtons={renderActionButtons} 
+                  plateType={plateType}
                 />
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={14} className="h-24 text-center">
+                <TableCell colSpan={plateType === "J" ? 14 : 15} className="h-24 text-center">
                   Kayıt bulunamadı.
                 </TableCell>
               </TableRow>
@@ -112,6 +115,7 @@ export function DataTable({
         onOpenChange={setDialogOpen}
         currentItem={currentRecord}
         onSave={onSave}
+        plateType={plateType}
       />
     </div>
   );

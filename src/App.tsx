@@ -11,6 +11,7 @@ import SPlaka from "./pages/SPlaka";
 import JPlaka from "./pages/JPlaka";
 import D4Plaka from "./pages/D4Plaka";
 import D4SPlaka from "./pages/D4SPlaka";
+import Archives from "./pages/Archives";
 import Raporlar from "./pages/Raporlar";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
@@ -80,6 +81,7 @@ const App = () => {
             <Route path="/j-plaka" element={<ProtectedRoute><JPlaka /></ProtectedRoute>} />
             <Route path="/d4-plaka" element={<ProtectedRoute><D4Plaka /></ProtectedRoute>} />
             <Route path="/d4s-plaka" element={<ProtectedRoute><D4SPlaka /></ProtectedRoute>} />
+            <Route path="/arsiv" element={<ProtectedRoute><Archives /></ProtectedRoute>} />
             <Route path="/raporlar" element={<ProtectedRoute><Raporlar /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>

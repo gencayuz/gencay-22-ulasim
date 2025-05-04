@@ -13,9 +13,10 @@ interface LicenseTableRowProps {
   item: LicenseData;
   onEdit: (item: LicenseData) => void;
   renderActionButtons?: (record: LicenseData) => React.ReactNode;
+  plateType?: string; // Add plateType prop
 }
 
-export const LicenseTableRow = ({ item, onEdit, renderActionButtons }: LicenseTableRowProps) => {
+export const LicenseTableRow = ({ item, onEdit, renderActionButtons, plateType }: LicenseTableRowProps) => {
   const getRowStatus = (endDate: Date) => {
     // If record is inactive, return normal status regardless of dates
     if (item.active === false) {
@@ -70,7 +71,9 @@ export const LicenseTableRow = ({ item, onEdit, renderActionButtons }: LicenseTa
       <TableCell>{item.vehicleAge}</TableCell>
       <TableCell>{item.criminalRecord === "yes" ? "Var" : "Yok"}</TableCell>
       <TableCell>{item.taxCertificate === "yes" ? "Var" : "Yok"}</TableCell>
+      <TableCell>{item.penaltyPoints === "yes" ? "Var" : "Yok"}</TableCell>
       <TableCell>{item.chamberRegistration === "yes" ? "Var" : "Yok"}</TableCell>
+      <TableCell>{item.sgkServiceList === "yes" ? "Var" : "Yok"}</TableCell>
       <TableCell>
         <DateRangeCell 
           dateRange={{ 
@@ -86,12 +89,15 @@ export const LicenseTableRow = ({ item, onEdit, renderActionButtons }: LicenseTa
           status={healthStatus} 
         />
       </TableCell>
-      <TableCell>
-        <DateRangeCell 
-          dateRange={item.seatInsurance} 
-          status={seatStatus} 
-        />
-      </TableCell>
+      {/* Only show seat insurance column if NOT T Plaka */}
+      {plateType !== "J" && (
+        <TableCell>
+          <DateRangeCell 
+            dateRange={item.seatInsurance} 
+            status={seatStatus} 
+          />
+        </TableCell>
+      )}
       <TableCell>
         <DateRangeCell 
           dateRange={item.psychotechnic} 
