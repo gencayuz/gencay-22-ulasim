@@ -42,10 +42,12 @@ const JPlaka = () => {
             endDate: addDays(new Date(), 365),
           },
           phone: item.phone || "",
+          sicilNo: item.sicilNo || "", // Add sicilNo field
           ownerType: item.ownerType || "owner", // Default to owner
           criminalRecord: item.criminalRecord || "no",
           taxCertificate: item.taxCertificate || "no",
           chamberRegistration: item.chamberRegistration || "no",
+          active: item.active !== undefined ? item.active : true, // Default to active
         }));
       } catch (error) {
         console.error("Error parsing saved data", error);
@@ -103,6 +105,7 @@ function generateInitialData(): LicenseData[] {
     {
       id: "1",
       name: "Hasan Yıldız",
+      sicilNo: "T-9876", // Add sicilNo
       phone: "05xx xxx xx xx",
       licensePlate: "34 J 9876",
       vehicleAge: 1,
@@ -121,11 +124,12 @@ function generateInitialData(): LicenseData[] {
         endDate: addDays(today, 180),
       },
       ownerType: "owner",
-      active: true, // Add missing active property
+      active: true,
     },
     {
       id: "2",
       name: "İbrahim Aydın",
+      sicilNo: "T-5432", // Add sicilNo
       phone: "05xx xxx xx xx",
       licensePlate: "34 J 5432",
       vehicleAge: 3,
@@ -144,11 +148,12 @@ function generateInitialData(): LicenseData[] {
         endDate: addDays(today, 90),
       },
       ownerType: "driver",
-      active: true, // Add missing active property
+      active: true,
     },
     {
       id: "3",
       name: "Merve Koç",
+      sicilNo: "T-2109", // Add sicilNo
       phone: "05xx xxx xx xx",
       licensePlate: "34 J 2109",
       vehicleAge: 5,
@@ -167,7 +172,7 @@ function generateInitialData(): LicenseData[] {
         endDate: addDays(today, -10),
       },
       ownerType: "owner",
-      active: true, // Add missing active property
+      active: true,
     },
   ];
 }

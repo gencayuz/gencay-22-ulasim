@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -46,6 +47,7 @@ export const LicenseFormDialog = ({
   
   // Basic form state
   const [name, setName] = useState("");
+  const [sicilNo, setSicilNo] = useState(""); // Add sicilNo state
   const [phone, setPhone] = useState("");
   const [licensePlatePrefix, setLicensePlatePrefix] = useState("");
   const [licensePlateNumber, setLicensePlateNumber] = useState("");
@@ -73,6 +75,7 @@ export const LicenseFormDialog = ({
   useEffect(() => {
     if (currentItem) {
       setName(currentItem.name);
+      setSicilNo(currentItem.sicilNo || ""); // Set sicilNo from currentItem
       setPhone(currentItem.phone || "");
       
       // Split license plate into prefix and number
@@ -104,6 +107,7 @@ export const LicenseFormDialog = ({
     } else {
       // Reset form for new entries
       setName("");
+      setSicilNo(""); // Reset sicilNo
       setPhone("");
       setLicensePlatePrefix("");
       setLicensePlateNumber("");
@@ -177,6 +181,7 @@ export const LicenseFormDialog = ({
     const newItem: LicenseData = {
       id: currentItem?.id || crypto.randomUUID(),
       name,
+      sicilNo, // Include sicilNo in the saved data
       phone,
       licensePlate,
       vehicleAge,
@@ -222,6 +227,19 @@ export const LicenseFormDialog = ({
               onChange={(e) => setName(e.target.value)}
               className={`col-span-3 ${formErrors.name ? 'border-red-500' : ''}`}
               required
+            />
+          </div>
+          
+          {/* Add Sicil Num. field right below name */}
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label htmlFor="sicilNo" className="text-right">
+              Sicil Num.
+            </label>
+            <Input
+              id="sicilNo"
+              value={sicilNo}
+              onChange={(e) => setSicilNo(e.target.value)}
+              className="col-span-3"
             />
           </div>
           

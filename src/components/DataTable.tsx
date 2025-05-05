@@ -71,6 +71,7 @@ export function DataTable({
           <TableHeader>
             <TableRow>
               <TableHead>Adı Soyadı</TableHead>
+              <TableHead>Sicil Num.</TableHead>
               <TableHead>Araç Sahibi / Şoför</TableHead>
               <TableHead>Araç Plakası</TableHead>
               <TableHead>Telefon</TableHead>
@@ -101,7 +102,7 @@ export function DataTable({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={plateType === "J" ? 14 : 15} className="h-24 text-center">
+                <TableCell colSpan={plateType === "J" ? 15 : 16} className="h-24 text-center">
                   Kayıt bulunamadı.
                 </TableCell>
               </TableRow>

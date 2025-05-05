@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -153,7 +154,7 @@ const Index = () => {
 
     processPlates(mPlaka, "M Plaka");
     processPlates(sPlaka, "S Plaka");
-    processPlates(jPlaka, "J Plaka");
+    processPlates(jPlaka, "T Plaka"); // Changed from J Plaka to T Plaka
     processPlates(d4Plaka, "D4 Plaka");
     processPlates(d4sPlaka, "D4S Plaka");
 
@@ -211,7 +212,7 @@ const Index = () => {
             onClick={() => navigate("/s-plaka")}
           />
           <TotalCard 
-            title="J Plaka" 
+            title="T Plaka" // Changed from J Plaka to T Plaka
             count={stats.jPlaka} 
             icon={FileCheck}
             color="purple"

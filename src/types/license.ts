@@ -7,6 +7,7 @@ export interface DateRange {
 export interface LicenseData {
   id: string;
   name: string;
+  sicilNo?: string; // Added new field for registration number
   phone: string;
   licensePlate: string;
   vehicleAge: number;

@@ -42,10 +42,12 @@ const D4SPlaka = () => {
             endDate: addDays(new Date(), 365),
           },
           phone: item.phone || "",
+          sicilNo: item.sicilNo || "", // Add sicilNo field
           ownerType: item.ownerType || "owner", // Default to owner
           criminalRecord: item.criminalRecord || "no",
           taxCertificate: item.taxCertificate || "no",
           chamberRegistration: item.chamberRegistration || "no",
+          active: item.active !== undefined ? item.active : true, // Default to active
         }));
       } catch (error) {
         console.error("Error parsing saved data", error);
@@ -103,6 +105,7 @@ function generateInitialData(): LicenseData[] {
     {
       id: "1",
       name: "Selin Yıldız",
+      sicilNo: "D4S-5678", // Add sicilNo
       phone: "05xx xxx xx xx",
       licensePlate: "34 D4S 5678",
       vehicleAge: 1,
@@ -121,7 +124,7 @@ function generateInitialData(): LicenseData[] {
         endDate: addDays(today, 200),
       },
       ownerType: "owner",
-      active: true, // Add missing active property
+      active: true,
     },
   ];
 }

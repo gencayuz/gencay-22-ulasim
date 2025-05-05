@@ -56,6 +56,7 @@ export const LicenseTableRow = ({ item, onEdit, renderActionButtons, plateType }
       }
     >
       <TableCell>{item.name}</TableCell>
+      <TableCell>{item.sicilNo || "-"}</TableCell>
       <TableCell>
         <div className="flex items-center gap-2">
           {getOwnerTypeLabel(item.ownerType)}

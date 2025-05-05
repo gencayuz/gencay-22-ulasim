@@ -46,8 +46,9 @@ const MPlaka = () => {
             endDate: new Date(item.srcCertificate.endDate),
           } : undefined,
           licenseDocument: item.licenseDocument || null,
+          sicilNo: item.sicilNo || "", // Add sicilNo field
           ownerType: item.ownerType || "owner",
-          active: item.active !== undefined ? item.active : true, // Set default active status
+          active: item.active !== undefined ? item.active : true,
         }));
       } catch (error) {
         console.error("Error parsing saved data", error);
@@ -105,6 +106,7 @@ function generateInitialData(): LicenseData[] {
     {
       id: "1",
       name: "Ahmet Yılmaz",
+      sicilNo: "M-1234", // Add sicilNo
       phone: "0555 123 4567",
       licensePlate: "34 M 1234",
       vehicleAge: 3,
@@ -133,6 +135,7 @@ function generateInitialData(): LicenseData[] {
     {
       id: "2",
       name: "Mehmet Demir",
+      sicilNo: "M-5678", // Add sicilNo
       phone: "0532 987 6543",
       licensePlate: "34 M 5678",
       vehicleAge: 5,
@@ -161,6 +164,7 @@ function generateInitialData(): LicenseData[] {
     {
       id: "3",
       name: "Ayşe Kaya",
+      sicilNo: "M-9012", // Add sicilNo
       phone: "0533 456 7890",
       licensePlate: "34 M 9012",
       vehicleAge: 2,
