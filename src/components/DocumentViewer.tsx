@@ -16,10 +16,10 @@ interface DocumentViewerProps {
   } | null;
 }
 
-export function DocumentViewer({ open, onOpenChange, document }: DocumentViewerProps) {
+export function DocumentViewer({ open, onOpenChange, document: documentData }: DocumentViewerProps) {
   const [isDownloading, setIsDownloading] = useState(false);
   
-  if (!document) return null;
+  if (!documentData) return null;
   
   const handleDownload = () => {
     setIsDownloading(true);
@@ -30,7 +30,7 @@ export function DocumentViewer({ open, onOpenChange, document }: DocumentViewerP
       
       // Create a dummy download (in a real app, this would be a real file download)
       const link = document.createElement("a");
-      link.download = document.fileName;
+      link.download = documentData.fileName;
       link.href = `data:application/octet-stream;base64,${btoa("This is a placeholder file content")}`;
       document.body.appendChild(link);
       link.click();
@@ -49,9 +49,9 @@ export function DocumentViewer({ open, onOpenChange, document }: DocumentViewerP
           <div className="border rounded-md p-6 bg-muted/30 flex flex-col items-center justify-center space-y-4">
             <File className="h-16 w-16 text-muted-foreground" />
             <div className="text-center">
-              <h3 className="font-medium">{document.fileName}</h3>
+              <h3 className="font-medium">{documentData.fileName}</h3>
               <p className="text-sm text-muted-foreground mt-1">
-                {document.licensePlate} - {document.documentType}
+                {documentData.licensePlate} - {documentData.documentType}
               </p>
             </div>
           </div>
