@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Search, Upload, FileText } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { DocumentViewer } from "@/components/DocumentViewer";
 
 interface ArchiveDocument {
   id: string;
@@ -25,6 +26,8 @@ const Archives = () => {
   const [licensePlate, setLicensePlate] = useState("");
   const [documentType, setDocumentType] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [selectedDocument, setSelectedDocument] = useState<ArchiveDocument | null>(null);
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
   
   const [documents, setDocuments] = useState<ArchiveDocument[]>(() => {
     const savedDocs = localStorage.getItem("archiveDocuments");
@@ -86,6 +89,11 @@ const Archives = () => {
     
     // Notify user
     toast.success("Belge başarıyla arşivlendi");
+  };
+  
+  const handleDocumentClick = (document: ArchiveDocument) => {
+    setSelectedDocument(document);
+    setIsViewerOpen(true);
   };
 
   const filteredDocuments = documents.filter(doc => 
@@ -183,7 +191,11 @@ const Archives = () => {
                   <TableBody>
                     {filteredDocuments.length > 0 ? (
                       filteredDocuments.map((doc) => (
-                        <TableRow key={doc.id}>
+                        <TableRow 
+                          key={doc.id} 
+                          className="cursor-pointer hover:bg-muted/70"
+                          onClick={() => handleDocumentClick(doc)}
+                        >
                           <TableCell>{doc.licensePlate}</TableCell>
                           <TableCell>{doc.documentType}</TableCell>
                           <TableCell className="flex items-center">
@@ -207,6 +219,12 @@ const Archives = () => {
           </Card>
         </div>
       </div>
+      
+      <DocumentViewer
+        open={isViewerOpen}
+        onOpenChange={setIsViewerOpen}
+        document={selectedDocument}
+      />
     </Layout>
   );
 };

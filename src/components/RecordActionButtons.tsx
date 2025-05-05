@@ -29,8 +29,42 @@ export const RecordActionButtons = ({
       };
       
       onSave(updatedRecord);
+      
+      // Save to archives
+      saveToArchives(file, record.licensePlate);
+      
       toast.success(`"${file.name}" belgesi başarıyla yüklendi.`);
     }
+  };
+  
+  const saveToArchives = (file: File, licensePlate: string) => {
+    // Get existing archives
+    const savedDocs = localStorage.getItem("archiveDocuments");
+    let documents = [];
+    
+    if (savedDocs) {
+      try {
+        documents = JSON.parse(savedDocs).map((doc: any) => ({
+          ...doc,
+          uploadDate: new Date(doc.uploadDate)
+        }));
+      } catch (error) {
+        console.error("Error parsing saved documents", error);
+      }
+    }
+    
+    // Create new document entry
+    const newDocument = {
+      id: Date.now().toString(),
+      licensePlate: licensePlate,
+      documentType: "Araç Belgesi",
+      fileName: file.name,
+      uploadDate: new Date()
+    };
+    
+    // Add to archives
+    const updatedDocuments = [...documents, newDocument];
+    localStorage.setItem("archiveDocuments", JSON.stringify(updatedDocuments));
   };
 
   return (

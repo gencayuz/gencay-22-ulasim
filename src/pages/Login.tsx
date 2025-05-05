@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { authenticateUser } from "@/utils/auth";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -17,17 +18,24 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Simple login check - in a real app, you'd validate against a server
     setTimeout(() => {
-      if (username && password) {
-        // Store login state
+      // Use the authentication function
+      const user = authenticateUser(username, password);
+      
+      if (user) {
+        // Store login state and user information
         localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("currentUser", JSON.stringify({
+          username: user.username,
+          role: user.role,
+          name: user.name
+        }));
         
         // Navigate to dashboard
         navigate("/");
         toast.success("Giriş başarılı");
       } else {
-        toast.error("Lütfen kullanıcı adı ve şifre giriniz");
+        toast.error("Kullanıcı adı veya şifre hatalı");
       }
       setLoading(false);
     }, 1000);
