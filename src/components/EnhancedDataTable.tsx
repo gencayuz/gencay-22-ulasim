@@ -50,7 +50,7 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
 
   return (
     <>
-      <div className="flex justify-end mb-2 space-x-2">
+      <div className="flex justify-end mb-1 space-x-1">
         <Button 
           variant="outline" 
           onClick={() => exportToExcel(sortedData, plateType)}
@@ -71,15 +71,17 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
         </Button>
       </div>
 
-      <DataTable 
-        data={sortedData} 
-        plateType={plateType} 
-        onSave={onSave}
-        renderActionButtons={renderActionButtons}
-        isDialogOpen={isDialogOpen}
-        setIsDialogOpen={setIsDialogOpen}
-        editRecord={editRecord}
-      />
+      <div className="w-full px-0 overflow-x-auto">
+        <DataTable 
+          data={sortedData} 
+          plateType={plateType} 
+          onSave={onSave}
+          renderActionButtons={renderActionButtons}
+          isDialogOpen={isDialogOpen}
+          setIsDialogOpen={setIsDialogOpen}
+          editRecord={editRecord}
+        />
+      </div>
       
       <SMSDialog 
         open={smsDialogOpen} 
