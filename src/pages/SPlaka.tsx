@@ -81,15 +81,15 @@ const SPlaka = () => {
 
   return (
     <Layout>
-      <Tabs defaultValue="records" className="w-full mb-6">
+      <Tabs defaultValue="records" className="w-full mb-4">
         <TabsList>
           <TabsTrigger value="home" onClick={() => navigate("/")}>Ana Sayfa</TabsTrigger>
           <TabsTrigger value="records">S Plaka Kayıtları</TabsTrigger>
         </TabsList>
       </Tabs>
       
-      <div className="container mx-auto">
-        <h2 className="text-xl font-semibold mb-4">S Plaka Kayıtları</h2>
+      <div className="container mx-auto px-1">
+        <h2 className="text-xl font-semibold mb-2">S Plaka Kayıtları</h2>
         <EnhancedDataTable data={data} plateType="S" onSave={handleSave} />
       </div>
     </Layout>

@@ -50,7 +50,7 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
 
   return (
     <>
-      <div className="flex justify-end mb-2 space-x-2">
+      <div className="flex justify-end mb-1 gap-1">
         <Button 
           variant="outline" 
           onClick={() => exportToExcel(sortedData, plateType)}
