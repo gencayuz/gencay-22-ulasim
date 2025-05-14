@@ -13,7 +13,7 @@ interface LicenseTableRowProps {
   item: LicenseData;
   onEdit: (item: LicenseData) => void;
   renderActionButtons?: (record: LicenseData) => React.ReactNode;
-  plateType?: string;
+  plateType?: string; // Add plateType prop
 }
 
 export const LicenseTableRow = ({ item, onEdit, renderActionButtons, plateType }: LicenseTableRowProps) => {
@@ -55,10 +55,10 @@ export const LicenseTableRow = ({ item, onEdit, renderActionButtons, plateType }
         worstStatus === "warning" ? "bg-warning/30" : ""
       }
     >
-      <TableCell className="whitespace-nowrap text-xs">{item.name}</TableCell>
-      <TableCell className="whitespace-nowrap text-xs">{item.sicilNo || "-"}</TableCell>
-      <TableCell className="whitespace-nowrap text-xs">
-        <div className="flex items-center gap-1">
+      <TableCell>{item.name}</TableCell>
+      <TableCell>{item.sicilNo || "-"}</TableCell>
+      <TableCell>
+        <div className="flex items-center gap-2">
           {getOwnerTypeLabel(item.ownerType)}
           {item.active === false && (
             <Badge variant="outline" className="text-xs bg-gray-100">
@@ -67,15 +67,15 @@ export const LicenseTableRow = ({ item, onEdit, renderActionButtons, plateType }
           )}
         </div>
       </TableCell>
-      <TableCell className="whitespace-nowrap text-xs">{item.licensePlate}</TableCell>
-      <TableCell className="whitespace-nowrap text-xs">{item.phone || "-"}</TableCell>
-      <TableCell className="whitespace-nowrap text-xs">{item.vehicleAge}</TableCell>
-      <TableCell className="whitespace-nowrap text-xs">{item.criminalRecord === "yes" ? "Var" : "Yok"}</TableCell>
-      <TableCell className="whitespace-nowrap text-xs">{item.taxCertificate === "yes" ? "Var" : "Yok"}</TableCell>
-      <TableCell className="whitespace-nowrap text-xs">{item.penaltyPoints === "yes" ? "Var" : "Yok"}</TableCell>
-      <TableCell className="whitespace-nowrap text-xs">{item.chamberRegistration === "yes" ? "Var" : "Yok"}</TableCell>
-      <TableCell className="whitespace-nowrap text-xs">{item.sgkServiceList === "yes" ? "Var" : "Yok"}</TableCell>
-      <TableCell className="whitespace-nowrap text-xs">
+      <TableCell>{item.licensePlate}</TableCell>
+      <TableCell>{item.phone || "-"}</TableCell>
+      <TableCell>{item.vehicleAge}</TableCell>
+      <TableCell>{item.criminalRecord === "yes" ? "Var" : "Yok"}</TableCell>
+      <TableCell>{item.taxCertificate === "yes" ? "Var" : "Yok"}</TableCell>
+      <TableCell>{item.penaltyPoints === "yes" ? "Var" : "Yok"}</TableCell>
+      <TableCell>{item.chamberRegistration === "yes" ? "Var" : "Yok"}</TableCell>
+      <TableCell>{item.sgkServiceList === "yes" ? "Var" : "Yok"}</TableCell>
+      <TableCell>
         <DateRangeCell 
           dateRange={{ 
             startDate: item.startDate, 
@@ -84,39 +84,40 @@ export const LicenseTableRow = ({ item, onEdit, renderActionButtons, plateType }
           status={licenseStatus} 
         />
       </TableCell>
-      <TableCell className="whitespace-nowrap text-xs">
+      <TableCell>
         <DateRangeCell 
           dateRange={item.healthReport} 
           status={healthStatus} 
         />
       </TableCell>
+      {/* Only show seat insurance column if NOT T Plaka */}
       {plateType !== "J" && (
-        <TableCell className="whitespace-nowrap text-xs">
+        <TableCell>
           <DateRangeCell 
             dateRange={item.seatInsurance} 
             status={seatStatus} 
           />
         </TableCell>
       )}
-      <TableCell className="whitespace-nowrap text-xs">
+      <TableCell>
         <DateRangeCell 
           dateRange={item.psychotechnic} 
           status={psychoStatus} 
         />
       </TableCell>
-      <TableCell className="whitespace-nowrap">
+      <TableCell>
         <StatusIndicator status={item.active === false ? "normal" : worstStatus} />
       </TableCell>
-      <TableCell className="text-right whitespace-nowrap">
+      <TableCell className="text-right">
         {renderActionButtons ? (
           renderActionButtons(item)
         ) : (
-          <Button variant="outline" size="sm" onClick={() => onEdit(item)} className="h-7 px-2">
-            <Pencil className="h-3 w-3 mr-1" />
+          <Button variant="outline" size="sm" onClick={() => onEdit(item)}>
+            <Pencil className="h-4 w-4 mr-1" />
             Düzenle
           </Button>
         )}
       </TableCell>
     </TableRow>
   );
-}
+};
