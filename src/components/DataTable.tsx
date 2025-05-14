@@ -53,7 +53,7 @@ export function DataTable({
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-3">
         <div className="flex items-center gap-2">
           <Search className="h-4 w-4 text-muted-foreground" />
           <Input
@@ -67,26 +67,26 @@ export function DataTable({
       </div>
       
       <div className="rounded-md border overflow-x-auto">
-        <Table>
+        <Table className="text-xs">
           <TableHeader>
             <TableRow>
-              <TableHead>Adı Soyadı</TableHead>
-              <TableHead>Sicil Num.</TableHead>
-              <TableHead>Araç Sahibi / Şoför</TableHead>
-              <TableHead>Araç Plakası</TableHead>
-              <TableHead>Telefon</TableHead>
-              <TableHead>Araç Yaşı</TableHead>
-              <TableHead>Sabıka Kaydı</TableHead>
-              <TableHead>Vergi Levhası</TableHead>
-              <TableHead>Ceza Puan Durumu</TableHead>
-              <TableHead>Oda Kaydı</TableHead>
-              <TableHead>SGK Hizmet Listesi</TableHead>
-              <TableHead>Ruhsat Tarihleri</TableHead>
-              <TableHead>Sağlık Raporu</TableHead>
-              {plateType !== "J" && <TableHead>Koltuk Sigortası</TableHead>}
-              <TableHead>Psikoteknik</TableHead>
-              <TableHead>Durum</TableHead>
-              <TableHead className="text-right">İşlemler</TableHead>
+              <TableHead className="whitespace-nowrap font-medium">Adı Soyadı</TableHead>
+              <TableHead className="whitespace-nowrap font-medium">Sicil Num.</TableHead>
+              <TableHead className="whitespace-nowrap font-medium">Araç Sahibi / Şoför</TableHead>
+              <TableHead className="whitespace-nowrap font-medium">Araç Plakası</TableHead>
+              <TableHead className="whitespace-nowrap font-medium">Telefon</TableHead>
+              <TableHead className="whitespace-nowrap font-medium">Araç Yaşı</TableHead>
+              <TableHead className="whitespace-nowrap font-medium">Sabıka Kaydı</TableHead>
+              <TableHead className="whitespace-nowrap font-medium">Vergi Levhası</TableHead>
+              <TableHead className="whitespace-nowrap font-medium">Ceza Puan Durumu</TableHead>
+              <TableHead className="whitespace-nowrap font-medium">Oda Kaydı</TableHead>
+              <TableHead className="whitespace-nowrap font-medium">SGK Hizmet Listesi</TableHead>
+              <TableHead className="whitespace-nowrap font-medium">Ruhsat Tarihleri</TableHead>
+              <TableHead className="whitespace-nowrap font-medium">Sağlık Raporu</TableHead>
+              {plateType !== "J" && <TableHead className="whitespace-nowrap font-medium">Koltuk Sigortası</TableHead>}
+              <TableHead className="whitespace-nowrap font-medium">Psikoteknik</TableHead>
+              <TableHead className="whitespace-nowrap font-medium">Durum</TableHead>
+              <TableHead className="text-right whitespace-nowrap font-medium">İşlemler</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
