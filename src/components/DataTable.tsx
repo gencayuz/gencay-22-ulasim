@@ -52,18 +52,18 @@ export function DataTable({
   };
 
   return (
-    <div className="w-full px-0">
-      <div className="flex justify-between items-center mb-2">
-        <div className="flex items-center gap-1">
-          <Search className="h-3 w-3 text-muted-foreground" />
+    <div>
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center gap-2">
+          <Search className="h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Arama..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-48 h-8 text-xs"
+            className="w-64"
           />
         </div>
-        <Button onClick={handleAddNew} size="sm" className="h-7 text-xs">Yeni Kayıt Ekle</Button>
+        <Button onClick={handleAddNew}>Yeni Kayıt Ekle</Button>
       </div>
       
       <div className="rounded-md border overflow-x-auto">

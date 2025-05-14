@@ -2,107 +2,98 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+ 
 @layer base {
   :root {
-    /* Light mode - sea blue & turquoise colors */
-    --background: 195 33% 98%;
-    --foreground: 215 25% 27%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 215 25% 27%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 27%;
-
-    --primary: 198 100% 38%; /* sea blue */
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 195 83% 42%; /* turquoise */
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+ 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 197 86% 85%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+ 
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+ 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 198 100% 38%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 197 64% 97%;
-    --sidebar-foreground: 215 25% 27%;
-    --sidebar-primary: 198 100% 38%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 195 33% 94%;
-    --sidebar-accent-foreground: 215 25% 27%;
-    --sidebar-border: 195 33% 94%;
-    --sidebar-ring: 198 90% 48%;
-  }
-
-  .dark {
-    /* Dark mode - navy/charcoal colors with turquoise accents */
-    --background: 215 50% 15%; /* navy background */
-    --foreground: 210 40% 98%; /* light text */
-
-    --card: 215 50% 18%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 215 50% 18%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 198 100% 38%;
+ 
+    --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
-
-    --secondary: 195 83% 42%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 215 40% 22%;
-    --muted-foreground: 210 30% 80%;
-
-    --accent: 215 40% 22%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
+ 
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+ 
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+ 
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-
-    --border: 215 40% 25%;
-    --input: 215 40% 25%;
-    --ring: 198 90% 48%;
-
-    --sidebar-background: 216 50% 12%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 198 100% 38%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 215 40% 20%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 215 40% 20%;
-    --sidebar-ring: 198 90% 48%;
+ 
+    --ring: 215 20.2% 65.1%;
+ 
+    --radius: 0.5rem;
+    
+    /* Custom colors */
+    --warning: 38 92% 50%;
+    --warning-foreground: 48 96% 89%;
+    
+    --danger: 0 84% 60%;
+    --danger-foreground: 210 40% 98%;
+    
+    --success: 142 76% 36%;
+    --success-foreground: 210 40% 98%;
+  }
+ 
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+ 
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+ 
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+ 
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+ 
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+ 
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+ 
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+ 
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 85.7% 97.3%;
+ 
+    --ring: 217.2 32.6% 17.5%;
   }
 }
-
+ 
 @layer base {
   * {
     @apply border-border;
   }
-
   body {
-    @apply bg-background text-foreground transition-colors duration-300;
+    @apply bg-background text-foreground;
   }
-  
-  /* Custom transition effects for theme switching */
-  .theme-transition {
-    @apply transition-all duration-300 ease-in-out;
-  }
-  
-  /* Card hover effect */
-  .card-hover {
-    @apply hover:shadow-lg hover:scale-[1.02] transition-all duration-300;
-  }
+}
+
+/* Custom styles for vertical text headers */
+.writing-mode-vertical {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  min-height: 100px;
+  align-items: center;
+  justify-content: flex-end;
 }
