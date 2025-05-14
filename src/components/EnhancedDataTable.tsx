@@ -50,21 +50,23 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
 
   return (
     <>
-      <div className="flex justify-end mb-4 space-x-2">
+      <div className="flex justify-end mb-2 space-x-2">
         <Button 
           variant="outline" 
           onClick={() => exportToExcel(sortedData, plateType)}
           className="flex items-center"
+          size="sm"
         >
-          <FileCog className="mr-1 h-4 w-4" />
+          <FileCog className="mr-1 h-3 w-3" />
           Excel'e Aktar
         </Button>
         <Button 
           variant="outline"
           onClick={() => exportToWord(sortedData, plateType)}
           className="flex items-center"
+          size="sm"
         >
-          <FileText className="mr-1 h-4 w-4" />
+          <FileText className="mr-1 h-3 w-3" />
           Word'e Aktar
         </Button>
       </div>

@@ -46,7 +46,7 @@ const MPlaka = () => {
             endDate: new Date(item.srcCertificate.endDate),
           } : undefined,
           licenseDocument: item.licenseDocument || null,
-          sicilNo: item.sicilNo || "", // Add sicilNo field
+          sicilNo: item.sicilNo || "", 
           ownerType: item.ownerType || "owner",
           active: item.active !== undefined ? item.active : true,
         }));
@@ -83,15 +83,15 @@ const MPlaka = () => {
 
   return (
     <Layout>
-      <Tabs defaultValue="records" className="w-full mb-6">
+      <Tabs defaultValue="records" className="w-full mb-4">
         <TabsList>
           <TabsTrigger value="home" onClick={() => navigate("/")}>Ana Sayfa</TabsTrigger>
           <TabsTrigger value="records">M Plaka Kayıtları</TabsTrigger>
         </TabsList>
       </Tabs>
       
-      <div className="container mx-auto">
-        <h2 className="text-xl font-semibold mb-4">M Plaka Kayıtları</h2>
+      <div className="w-full px-1">
+        <h2 className="text-xl font-semibold mb-2">M Plaka Kayıtları</h2>
         <EnhancedDataTable data={data} plateType="M" onSave={handleSave} />
       </div>
     </Layout>
