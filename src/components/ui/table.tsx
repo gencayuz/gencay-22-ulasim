@@ -71,15 +71,11 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "h-32 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 whitespace-normal text-xs",
+      "h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 whitespace-nowrap text-xs",
       className
     )}
     {...props}
-  >
-    <div className="writing-mode-vertical flex flex-col">
-      {props.children}
-    </div>
-  </th>
+  />
 ))
 TableHead.displayName = "TableHead"
 
