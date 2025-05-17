@@ -88,7 +88,7 @@ const SPlaka = () => {
         </TabsList>
       </Tabs>
       
-      <div className="container mx-auto px-1">
+      <div className="w-full px-1">
         <h2 className="text-xl font-semibold mb-2">S Plaka Kayıtları</h2>
         <EnhancedDataTable data={data} plateType="S" onSave={handleSave} />
       </div>

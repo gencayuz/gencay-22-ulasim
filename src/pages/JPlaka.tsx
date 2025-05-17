@@ -82,15 +82,15 @@ const JPlaka = () => {
 
   return (
     <Layout>
-      <Tabs defaultValue="records" className="w-full mb-6">
+      <Tabs defaultValue="records" className="w-full mb-4">
         <TabsList>
           <TabsTrigger value="home" onClick={() => navigate("/")}>Ana Sayfa</TabsTrigger>
           <TabsTrigger value="records">T Plaka Kayıtları</TabsTrigger>
         </TabsList>
       </Tabs>
       
-      <div className="container mx-auto">
-        <h2 className="text-xl font-semibold mb-4">T Plaka Kayıtları</h2>
+      <div className="w-full px-1">
+        <h2 className="text-xl font-semibold mb-2">T Plaka Kayıtları</h2>
         <EnhancedDataTable data={data} plateType="J" onSave={handleSave} />
       </div>
     </Layout>

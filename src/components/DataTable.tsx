@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
@@ -52,41 +51,41 @@ export function DataTable({
   };
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
+    <div className="w-full">
+      <div className="flex justify-between items-center mb-2 gap-2">
         <div className="flex items-center gap-2">
           <Search className="h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Arama..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-64"
+            className="w-48 sm:w-64"
           />
         </div>
-        <Button onClick={handleAddNew}>Yeni Kayıt Ekle</Button>
+        <Button onClick={handleAddNew} size="sm">Yeni Kayıt Ekle</Button>
       </div>
       
       <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Adı Soyadı</TableHead>
-              <TableHead>Sicil Num.</TableHead>
-              <TableHead>Araç Sahibi / Şoför</TableHead>
-              <TableHead>Araç Plakası</TableHead>
-              <TableHead>Telefon</TableHead>
-              <TableHead>Araç Yaşı</TableHead>
-              <TableHead>Sabıka Kaydı</TableHead>
-              <TableHead>Vergi Levhası</TableHead>
-              <TableHead>Ceza Puan Durumu</TableHead>
-              <TableHead>Oda Kaydı</TableHead>
-              <TableHead>SGK Hizmet Listesi</TableHead>
-              <TableHead>Ruhsat Tarihleri</TableHead>
-              <TableHead>Sağlık Raporu</TableHead>
-              {plateType !== "J" && <TableHead>Koltuk Sigortası</TableHead>}
-              <TableHead>Psikoteknik</TableHead>
-              <TableHead>Durum</TableHead>
-              <TableHead className="text-right">İşlemler</TableHead>
+              <TableHead className="w-[12%]">Adı Soyadı</TableHead>
+              <TableHead className="w-[8%]">Sicil Num.</TableHead>
+              <TableHead className="w-[10%]">Araç Sahibi / Şoför</TableHead>
+              <TableHead className="w-[8%]">Araç Plakası</TableHead>
+              <TableHead className="w-[8%]">Telefon</TableHead>
+              <TableHead className="w-[5%]">Araç Yaşı</TableHead>
+              <TableHead className="w-[6%]">Sabıka Kaydı</TableHead>
+              <TableHead className="w-[6%]">Vergi Levhası</TableHead>
+              <TableHead className="w-[6%]">Ceza Puan Durumu</TableHead>
+              <TableHead className="w-[6%]">Oda Kaydı</TableHead>
+              <TableHead className="w-[6%]">SGK Hizmet Listesi</TableHead>
+              <TableHead className="w-[8%]">Ruhsat Tarihleri</TableHead>
+              <TableHead className="w-[8%]">Sağlık Raporu</TableHead>
+              {plateType !== "J" && <TableHead className="w-[8%]">Koltuk Sigortası</TableHead>}
+              <TableHead className="w-[8%]">Psikoteknik</TableHead>
+              <TableHead className="w-[5%]">Durum</TableHead>
+              <TableHead className="w-[10%] text-right">İşlemler</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

@@ -49,7 +49,7 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
   };
 
   return (
-    <>
+    <div className="w-full">
       <div className="flex justify-end mb-1 gap-1">
         <Button 
           variant="outline" 
@@ -86,6 +86,6 @@ export const EnhancedDataTable = ({ data, plateType, onSave }: EnhancedDataTable
         onOpenChange={setSmsDialogOpen} 
         record={currentRecord} 
       />
-    </>
+    </div>
   );
 };
