@@ -30,7 +30,7 @@ export const RecordActionButtons = ({
       
       onSave(updatedRecord);
       
-      // Save to archives
+      // Save to archives - use sessionStorage instead of localStorage
       saveToArchives(file, record.licensePlate);
       
       toast.success(`"${file.name}" belgesi başarıyla yüklendi.`);
@@ -38,8 +38,8 @@ export const RecordActionButtons = ({
   };
   
   const saveToArchives = (file: File, licensePlate: string) => {
-    // Get existing archives
-    const savedDocs = localStorage.getItem("archiveDocuments");
+    // Get existing archives from sessionStorage instead of localStorage
+    const savedDocs = sessionStorage.getItem("archiveDocuments");
     let documents = [];
     
     if (savedDocs) {
@@ -62,9 +62,9 @@ export const RecordActionButtons = ({
       uploadDate: new Date()
     };
     
-    // Add to archives
+    // Add to archives - use sessionStorage instead of localStorage
     const updatedDocuments = [...documents, newDocument];
-    localStorage.setItem("archiveDocuments", JSON.stringify(updatedDocuments));
+    sessionStorage.setItem("archiveDocuments", JSON.stringify(updatedDocuments));
   };
 
   return (

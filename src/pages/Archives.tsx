@@ -30,7 +30,8 @@ const Archives = () => {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   
   const [documents, setDocuments] = useState<ArchiveDocument[]>(() => {
-    const savedDocs = localStorage.getItem("archiveDocuments");
+    // Use sessionStorage instead of localStorage for shared access
+    const savedDocs = sessionStorage.getItem("archiveDocuments");
     if (savedDocs) {
       try {
         const parsedDocs = JSON.parse(savedDocs);
@@ -77,10 +78,10 @@ const Archives = () => {
       uploadDate: new Date()
     };
 
-    // Add to state and save to localStorage
+    // Add to state and save to sessionStorage instead of localStorage
     const updatedDocuments = [...documents, newDocument];
     setDocuments(updatedDocuments);
-    localStorage.setItem("archiveDocuments", JSON.stringify(updatedDocuments));
+    sessionStorage.setItem("archiveDocuments", JSON.stringify(updatedDocuments));
 
     // Reset form
     setLicensePlate("");
