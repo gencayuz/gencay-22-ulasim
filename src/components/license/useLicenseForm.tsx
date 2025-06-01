@@ -1,96 +1,90 @@
-
 import { useState, useEffect } from "react";
 import { LicenseData } from "@/types/license";
-import { addDays } from "date-fns";
 import { toast } from "sonner";
+import { getInitialFormState, getFormStateFromLicenseData } from "./formInitialization";
 
 export const useLicenseForm = (currentItem: LicenseData | null, plateType: string) => {
+  // Initialize form state using helper function
+  const initialState = getInitialFormState();
+  
   // Basic form state
-  const [name, setName] = useState("");
-  const [sicilNo, setSicilNo] = useState("");
-  const [phone, setPhone] = useState("");
-  const [licensePlatePrefix, setLicensePlatePrefix] = useState("");
-  const [licensePlateNumber, setLicensePlateNumber] = useState("");
-  const [vehicleAge, setVehicleAge] = useState<number>(0);
-  const [startDate, setStartDate] = useState<Date | undefined>(new Date());
-  const [endDate, setEndDate] = useState<Date | undefined>(addDays(new Date(), 365));
-  const [ownerType, setOwnerType] = useState<"owner" | "driver">("owner");
-  const [criminalRecord, setCriminalRecord] = useState<"yes" | "no">("no");
-  const [taxCertificate, setTaxCertificate] = useState<"yes" | "no">("no");
-  const [chamberRegistration, setChamberRegistration] = useState<"yes" | "no">("no");
-  const [sgkServiceList, setSgkServiceList] = useState<"yes" | "no">("no");
-  const [penaltyPoints, setPenaltyPoints] = useState<"yes" | "no">("no");
-  const [active, setActive] = useState<boolean>(true);
+  const [name, setName] = useState(initialState.name);
+  const [sicilNo, setSicilNo] = useState(initialState.sicilNo);
+  const [phone, setPhone] = useState(initialState.phone);
+  const [licensePlatePrefix, setLicensePlatePrefix] = useState(initialState.licensePlatePrefix);
+  const [licensePlateNumber, setLicensePlateNumber] = useState(initialState.licensePlateNumber);
+  const [vehicleAge, setVehicleAge] = useState<number>(initialState.vehicleAge);
+  const [startDate, setStartDate] = useState<Date | undefined>(initialState.startDate);
+  const [endDate, setEndDate] = useState<Date | undefined>(initialState.endDate);
+  const [ownerType, setOwnerType] = useState<"owner" | "driver">(initialState.ownerType);
+  const [criminalRecord, setCriminalRecord] = useState<"yes" | "no">(initialState.criminalRecord);
+  const [taxCertificate, setTaxCertificate] = useState<"yes" | "no">(initialState.taxCertificate);
+  const [chamberRegistration, setChamberRegistration] = useState<"yes" | "no">(initialState.chamberRegistration);
+  const [sgkServiceList, setSgkServiceList] = useState<"yes" | "no">(initialState.sgkServiceList);
+  const [penaltyPoints, setPenaltyPoints] = useState<"yes" | "no">(initialState.penaltyPoints);
+  const [active, setActive] = useState<boolean>(initialState.active);
   
   // State for additional fields
-  const [healthStartDate, setHealthStartDate] = useState<Date | undefined>(new Date());
-  const [healthEndDate, setHealthEndDate] = useState<Date | undefined>(addDays(new Date(), 365));
-  const [seatStartDate, setSeatStartDate] = useState<Date | undefined>(new Date());
-  const [seatEndDate, setSeatEndDate] = useState<Date | undefined>(addDays(new Date(), 365));
-  const [psychoStartDate, setPsychoStartDate] = useState<Date | undefined>(new Date());
-  const [psychoEndDate, setPsychoEndDate] = useState<Date | undefined>(addDays(new Date(), 365));
+  const [healthStartDate, setHealthStartDate] = useState<Date | undefined>(initialState.healthStartDate);
+  const [healthEndDate, setHealthEndDate] = useState<Date | undefined>(initialState.healthEndDate);
+  const [seatStartDate, setSeatStartDate] = useState<Date | undefined>(initialState.seatStartDate);
+  const [seatEndDate, setSeatEndDate] = useState<Date | undefined>(initialState.seatEndDate);
+  const [psychoStartDate, setPsychoStartDate] = useState<Date | undefined>(initialState.psychoStartDate);
+  const [psychoEndDate, setPsychoEndDate] = useState<Date | undefined>(initialState.psychoEndDate);
 
   // Form validation
   const [formErrors, setFormErrors] = useState<{[key: string]: boolean}>({});
 
   useEffect(() => {
     if (currentItem) {
-      setName(currentItem.name);
-      setSicilNo(currentItem.sicilNo || "");
-      setPhone(currentItem.phone || "");
+      const formState = getFormStateFromLicenseData(currentItem);
       
-      // Split license plate into prefix and number
-      const plateMatch = currentItem.licensePlate.match(/(\d{2})\s*([A-Z])\s*(\d+)/);
-      if (plateMatch) {
-        setLicensePlatePrefix(plateMatch[1]);
-        setLicensePlateNumber(plateMatch[3]);
-      } else {
-        setLicensePlatePrefix("");
-        setLicensePlateNumber("");
-      }
-      
-      setVehicleAge(currentItem.vehicleAge);
-      setStartDate(currentItem.startDate);
-      setEndDate(currentItem.endDate);
-      setOwnerType(currentItem.ownerType || "owner");
-      setCriminalRecord(currentItem.criminalRecord || "no");
-      setTaxCertificate(currentItem.taxCertificate || "no");
-      setChamberRegistration(currentItem.chamberRegistration || "no");
-      setSgkServiceList(currentItem.sgkServiceList || "no");
-      setPenaltyPoints(currentItem.penaltyPoints || "no");
-      setActive(currentItem.active !== undefined ? currentItem.active : true);
-      
-      // Set additional fields if they exist
-      setHealthStartDate(currentItem.healthReport?.startDate || new Date());
-      setHealthEndDate(currentItem.healthReport?.endDate || addDays(new Date(), 365));
-      setSeatStartDate(currentItem.seatInsurance?.startDate || new Date());
-      setSeatEndDate(currentItem.seatInsurance?.endDate || addDays(new Date(), 365));
-      setPsychoStartDate(currentItem.psychotechnic?.startDate || new Date());
-      setPsychoEndDate(currentItem.psychotechnic?.endDate || addDays(new Date(), 365));
+      setName(formState.name);
+      setSicilNo(formState.sicilNo);
+      setPhone(formState.phone);
+      setLicensePlatePrefix(formState.licensePlatePrefix);
+      setLicensePlateNumber(formState.licensePlateNumber);
+      setVehicleAge(formState.vehicleAge);
+      setStartDate(formState.startDate);
+      setEndDate(formState.endDate);
+      setOwnerType(formState.ownerType);
+      setCriminalRecord(formState.criminalRecord);
+      setTaxCertificate(formState.taxCertificate);
+      setChamberRegistration(formState.chamberRegistration);
+      setSgkServiceList(formState.sgkServiceList);
+      setPenaltyPoints(formState.penaltyPoints);
+      setActive(formState.active);
+      setHealthStartDate(formState.healthStartDate);
+      setHealthEndDate(formState.healthEndDate);
+      setSeatStartDate(formState.seatStartDate);
+      setSeatEndDate(formState.seatEndDate);
+      setPsychoStartDate(formState.psychoStartDate);
+      setPsychoEndDate(formState.psychoEndDate);
     } else {
-      // Reset form for new entries
-      setName("");
-      setSicilNo("");
-      setPhone("");
-      setLicensePlatePrefix("");
-      setLicensePlateNumber("");
-      setVehicleAge(0);
-      setStartDate(new Date());
-      setEndDate(addDays(new Date(), 365));
-      setOwnerType("owner");
-      setCriminalRecord("no");
-      setTaxCertificate("no");
-      setChamberRegistration("no");
-      setSgkServiceList("no");
-      setPenaltyPoints("no");
-      setActive(true);
-      // Reset additional fields
-      setHealthStartDate(new Date());
-      setHealthEndDate(addDays(new Date(), 365));
-      setSeatStartDate(new Date());
-      setSeatEndDate(addDays(new Date(), 365));
-      setPsychoStartDate(new Date());
-      setPsychoEndDate(addDays(new Date(), 365));
+      // Reset form for new entries using helper function
+      const resetState = getInitialFormState();
+      
+      setName(resetState.name);
+      setSicilNo(resetState.sicilNo);
+      setPhone(resetState.phone);
+      setLicensePlatePrefix(resetState.licensePlatePrefix);
+      setLicensePlateNumber(resetState.licensePlateNumber);
+      setVehicleAge(resetState.vehicleAge);
+      setStartDate(resetState.startDate);
+      setEndDate(resetState.endDate);
+      setOwnerType(resetState.ownerType);
+      setCriminalRecord(resetState.criminalRecord);
+      setTaxCertificate(resetState.taxCertificate);
+      setChamberRegistration(resetState.chamberRegistration);
+      setSgkServiceList(resetState.sgkServiceList);
+      setPenaltyPoints(resetState.penaltyPoints);
+      setActive(resetState.active);
+      setHealthStartDate(resetState.healthStartDate);
+      setHealthEndDate(resetState.healthEndDate);
+      setSeatStartDate(resetState.seatStartDate);
+      setSeatEndDate(resetState.seatEndDate);
+      setPsychoStartDate(resetState.psychoStartDate);
+      setPsychoEndDate(resetState.psychoEndDate);
     }
     
     // Reset form errors
