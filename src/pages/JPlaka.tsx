@@ -1,22 +1,45 @@
-
 import { useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
 import { EnhancedDataTable } from "@/components/EnhancedDataTable";
 import { toast } from "sonner";
-import { addDays } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
 import { LicenseData } from "@/types/license";
+import { licenseApi } from "@/utils/apiService";
+import { convertApiDataToLicense, convertLicenseDataToApi } from "@/utils/dataConversion";
 
 const JPlaka = () => {
   const navigate = useNavigate();
-  const [data, setData] = useState<LicenseData[]>(() => {
+  const [data, setData] = useState<LicenseData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Load data from API on component mount
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const apiData = await licenseApi.getLicenses('J');
+        const convertedData = apiData.map(convertApiDataToLicense);
+        setData(convertedData);
+      } catch (error) {
+        console.error('Failed to load J plaka data:', error);
+        toast.error('Veriler yüklenirken hata oluştu');
+        // Fallback to localStorage if API fails
+        loadFromLocalStorage();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  const loadFromLocalStorage = () => {
     const savedData = localStorage.getItem("jPlaka");
     if (savedData) {
       try {
         const parsedData = JSON.parse(savedData);
         // Convert string dates back to Date objects
-        return parsedData.map((item: any) => ({
+        const convertedData = parsedData.map((item: any) => ({
           ...item,
           startDate: new Date(item.startDate),
           endDate: new Date(item.endDate),
@@ -25,21 +48,21 @@ const JPlaka = () => {
             endDate: new Date(item.healthReport.endDate),
           } : {
             startDate: new Date(),
-            endDate: addDays(new Date(), 365),
+            endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
           },
           seatInsurance: item.seatInsurance ? {
             startDate: new Date(item.seatInsurance.startDate),
             endDate: new Date(item.seatInsurance.endDate),
           } : {
             startDate: new Date(),
-            endDate: addDays(new Date(), 365),
+            endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
           },
           psychotechnic: item.psychotechnic ? {
             startDate: new Date(item.psychotechnic.startDate),
             endDate: new Date(item.psychotechnic.endDate),
           } : {
             startDate: new Date(),
-            endDate: addDays(new Date(), 365),
+            endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
           },
           phone: item.phone || "",
           sicilNo: item.sicilNo || "", // Add sicilNo field
@@ -49,132 +72,71 @@ const JPlaka = () => {
           chamberRegistration: item.chamberRegistration || "no",
           active: item.active !== undefined ? item.active : true, // Default to active
         }));
+        setData(convertedData);
       } catch (error) {
         console.error("Error parsing saved data", error);
-        return generateInitialData();
+        setData([]);
       }
-    } else {
-      return generateInitialData();
     }
-  });
-
-  useEffect(() => {
-    // Save to localStorage whenever data changes
-    localStorage.setItem("jPlaka", JSON.stringify(data));
-  }, [data]);
-
-  const handleSave = (newItem: LicenseData) => {
-    setData((prevData) => {
-      const index = prevData.findIndex((item) => item.id === newItem.id);
-      if (index >= 0) {
-        // Update existing item
-        const updatedData = [...prevData];
-        updatedData[index] = newItem;
-        toast.success("Kayıt güncellendi");
-        return updatedData;
-      } else {
-        // Add new item
-        toast.success("Yeni kayıt eklendi");
-        return [...prevData, newItem];
-      }
-    });
   };
+
+  const handleSave = async (newItem: LicenseData) => {
+    try {
+      // Convert to API format and save to server
+      const apiData = convertLicenseDataToApi(newItem);
+      await licenseApi.saveLicense('J', apiData);
+      
+      // Update local state
+      setData((prevData) => {
+        const index = prevData.findIndex((item) => item.id === newItem.id);
+        if (index >= 0) {
+          // Update existing item
+          const updatedData = [...prevData];
+          updatedData[index] = newItem;
+          toast.success("Kayıt güncellendi");
+          return updatedData;
+        } else {
+          // Add new item
+          toast.success("Yeni kayıt eklendi");
+          return [...prevData, newItem];
+        }
+      });
+      
+      // Also save to localStorage as backup
+      localStorage.setItem("jPlaka", JSON.stringify([...data.filter(item => item.id !== newItem.id), newItem]));
+    } catch (error) {
+      console.error('Failed to save license:', error);
+      toast.error('Kayıt kaydedilirken hata oluştu');
+    }
+  };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <p className="text-muted-foreground">Veriler yükleniyor...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
       <Tabs defaultValue="records" className="w-full mb-4">
         <TabsList>
           <TabsTrigger value="home" onClick={() => navigate("/")}>Ana Sayfa</TabsTrigger>
-          <TabsTrigger value="records">T Plaka Kayıtları</TabsTrigger>
+          <TabsTrigger value="records">J Plaka Kayıtları</TabsTrigger>
         </TabsList>
       </Tabs>
       
       <div className="w-full px-1">
-        <h2 className="text-xl font-semibold mb-2">T Plaka Kayıtları</h2>
+        <h2 className="text-xl font-semibold mb-2">J Plaka Kayıtları</h2>
         <EnhancedDataTable data={data} plateType="J" onSave={handleSave} />
       </div>
     </Layout>
   );
 };
-
-// Helper function to generate initial sample data
-function generateInitialData(): LicenseData[] {
-  const today = new Date();
-  
-  return [
-    {
-      id: "1",
-      name: "Hasan Yıldız",
-      sicilNo: "T-9876", // Add sicilNo
-      phone: "05xx xxx xx xx",
-      licensePlate: "34 J 9876",
-      vehicleAge: 1,
-      startDate: new Date(today.getFullYear(), today.getMonth() - 6, today.getDate()),
-      endDate: addDays(today, 180),
-      healthReport: {
-        startDate: new Date(today.getFullYear(), today.getMonth() - 6, today.getDate()),
-        endDate: addDays(today, 180),
-      },
-      seatInsurance: {
-        startDate: new Date(today.getFullYear(), today.getMonth() - 6, today.getDate()),
-        endDate: addDays(today, 180),
-      },
-      psychotechnic: {
-        startDate: new Date(today.getFullYear(), today.getMonth() - 6, today.getDate()),
-        endDate: addDays(today, 180),
-      },
-      ownerType: "owner",
-      active: true,
-    },
-    {
-      id: "2",
-      name: "İbrahim Aydın",
-      sicilNo: "T-5432", // Add sicilNo
-      phone: "05xx xxx xx xx",
-      licensePlate: "34 J 5432",
-      vehicleAge: 3,
-      startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
-      endDate: addDays(today, 7), // Expiring soon
-      healthReport: {
-        startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
-        endDate: addDays(today, 30),
-      },
-      seatInsurance: {
-        startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
-        endDate: addDays(today, 60),
-      },
-      psychotechnic: {
-        startDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
-        endDate: addDays(today, 90),
-      },
-      ownerType: "driver",
-      active: true,
-    },
-    {
-      id: "3",
-      name: "Merve Koç",
-      sicilNo: "T-2109", // Add sicilNo
-      phone: "05xx xxx xx xx",
-      licensePlate: "34 J 2109",
-      vehicleAge: 5,
-      startDate: new Date(today.getFullYear() - 2, today.getMonth(), today.getDate()),
-      endDate: addDays(today, -2), // Expired
-      healthReport: {
-        startDate: new Date(today.getFullYear() - 2, today.getMonth(), today.getDate()),
-        endDate: addDays(today, -5),
-      },
-      seatInsurance: {
-        startDate: new Date(today.getFullYear() - 2, today.getMonth(), today.getDate()),
-        endDate: addDays(today, 120),
-      },
-      psychotechnic: {
-        startDate: new Date(today.getFullYear() - 2, today.getMonth(), today.getDate()),
-        endDate: addDays(today, -10),
-      },
-      ownerType: "owner",
-      active: true,
-    },
-  ];
-}
 
 export default JPlaka;

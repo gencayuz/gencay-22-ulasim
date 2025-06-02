@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
 import { toast } from "sonner";
 import { ArchiveDocument } from "@/components/archives/DocumentList";
+import { documentApi } from "@/utils/apiService";
 
 interface UploadFormProps {
   onUploadSuccess: (document: ArchiveDocument) => void;
@@ -16,6 +17,7 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
   const [licensePlate, setLicensePlate] = useState("");
   const [documentType, setDocumentType] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -23,7 +25,7 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
     }
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!licensePlate.trim()) {
       toast.error("Araç plakası girmelisiniz.");
       return;
@@ -39,24 +41,32 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
       return;
     }
 
-    // Create new document entry
-    const newDocument: ArchiveDocument = {
-      id: Date.now().toString(),
-      licensePlate,
-      documentType,
-      fileName: file.name,
-      uploadDate: new Date()
-    };
+    setUploading(true);
 
-    onUploadSuccess(newDocument);
+    try {
+      // Upload to server
+      const uploadedDoc = await documentApi.uploadDocument(file, licensePlate, documentType);
+      
+      onUploadSuccess(uploadedDoc);
 
-    // Reset form
-    setLicensePlate("");
-    setDocumentType("");
-    setFile(null);
-    
-    // Notify user
-    toast.success("Belge başarıyla arşivlendi");
+      // Reset form
+      setLicensePlate("");
+      setDocumentType("");
+      setFile(null);
+      
+      // Reset file input
+      const fileInput = document.getElementById('file') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = '';
+      }
+      
+      toast.success("Belge başarıyla arşivlendi ve sunucuya yüklendi");
+    } catch (error) {
+      console.error('Failed to upload document:', error);
+      toast.error("Belge yüklenirken hata oluştu");
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -71,6 +81,7 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
               value={licensePlate} 
               onChange={(e) => setLicensePlate(e.target.value)} 
               placeholder="34 T 1234"
+              disabled={uploading}
             />
           </div>
           
@@ -81,6 +92,7 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
               value={documentType} 
               onChange={(e) => setDocumentType(e.target.value)} 
               placeholder="Araç Ruhsatı, Sabıka Kaydı, Oda Kaydı, vb."
+              disabled={uploading}
             />
           </div>
           
@@ -91,6 +103,8 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
                 id="file" 
                 type="file" 
                 onChange={handleFileChange}
+                disabled={uploading}
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
               />
             </div>
           </div>
@@ -98,10 +112,10 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
           <Button 
             className="w-full" 
             onClick={handleUpload}
-            disabled={!licensePlate || !documentType || !file}
+            disabled={!licensePlate || !documentType || !file || uploading}
           >
             <Upload className="h-4 w-4 mr-2" />
-            Belgeyi Yükle
+            {uploading ? "Yükleniyor..." : "Belgeyi Yükle"}
           </Button>
         </div>
       </CardContent>

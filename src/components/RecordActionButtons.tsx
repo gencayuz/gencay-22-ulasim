@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { FileUp, Phone, Pencil } from "lucide-react";
 import { LicenseData } from "@/types/license";
 import { toast } from "sonner";
+import { documentApi } from "@/utils/apiService";
 
 interface RecordActionButtonsProps {
   record: LicenseData;
@@ -18,27 +19,38 @@ export const RecordActionButtons = ({
   onEdit
 }: RecordActionButtonsProps) => {
   
-  const handleUploadPdf = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUploadPdf = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // In a real application, you would upload this file to a server
-      // For now, we'll just store the file name to indicate a document is uploaded
-      const updatedRecord = { 
-        ...record, 
-        licenseDocument: file.name 
-      };
-      
-      onSave(updatedRecord);
-      
-      // Save to archives - use sessionStorage instead of localStorage
-      saveToArchives(file, record.licensePlate);
-      
-      toast.success(`"${file.name}" belgesi başarıyla yüklendi.`);
+      try {
+        // Upload to server
+        const uploadedDoc = await documentApi.uploadDocument(
+          file, 
+          record.licensePlate, 
+          "Araç Belgesi"
+        );
+        
+        // Update record with document reference
+        const updatedRecord = { 
+          ...record, 
+          licenseDocument: uploadedDoc.fileName 
+        };
+        
+        onSave(updatedRecord);
+        
+        // Also save to sessionStorage for backward compatibility
+        saveToArchives(file, record.licensePlate);
+        
+        toast.success(`"${file.name}" belgesi başarıyla yüklendi ve sunucuya kaydedildi.`);
+      } catch (error) {
+        console.error('Failed to upload document:', error);
+        toast.error('Belge yüklenirken hata oluştu');
+      }
     }
   };
   
   const saveToArchives = (file: File, licensePlate: string) => {
-    // Get existing archives from sessionStorage instead of localStorage
+    // Get existing archives from sessionStorage
     const savedDocs = sessionStorage.getItem("archiveDocuments");
     let documents = [];
     
@@ -62,7 +74,7 @@ export const RecordActionButtons = ({
       uploadDate: new Date()
     };
     
-    // Add to archives - use sessionStorage instead of localStorage
+    // Add to archives
     const updatedDocuments = [...documents, newDocument];
     sessionStorage.setItem("archiveDocuments", JSON.stringify(updatedDocuments));
   };
